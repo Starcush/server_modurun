@@ -4,9 +4,9 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as morgan from 'morgan';
+import router from './routes/index';
 import 'dotenv/config';
 // Import Routers
-const router = require('./routes/index');
 // import router from './routes';
 // Connect typeORM mysql
 createConnection()
@@ -22,13 +22,11 @@ app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: false,
-  })
+  }),
 );
 app.use(morgan('dev'));
 app.use(cors());
 // Routes
 app.use('/', router);
 
-app.listen(app.get('port'), () =>
-  console.log(`BillyZip App Listening on PORT ${app.get('port')}`)
-);
+app.listen(app.get('port'), () => console.log(`BillyZip App Listening on PORT ${app.get('port')}`));

@@ -1,18 +1,24 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class User {
+class User {
+  // static findOne(arg0: { where: { email: any; }; }) {
+  //     throw new Error("Method not implemented.");
+  // }
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column()
+  email: string;
 
-    @Column()
-    firstName: string;
+  @Column()
+  password: string;
 
-    @Column()
-    lastName: string;
+  @Column()
+  username: string;
 
-    @Column()
-    age: number;
-
+  @Column()
+  loginUount: number;
 }
+
+export default User;

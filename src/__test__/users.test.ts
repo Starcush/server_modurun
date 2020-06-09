@@ -1,6 +1,11 @@
-const axios = require('axios');
+import * as request from 'supertest';
+import { expect } from 'chai';
+import server from '../server';
+
 const mysql = require('mysql');
 require('dotenv').config();
+
+const agent = request(server);
 
 describe('user API test', () => {
   let dbConnection;
@@ -13,7 +18,7 @@ describe('user API test', () => {
     });
     dbConnection.connect();
 
-    const tablename = 'users';
+    const tablename = 'user';
     dbConnection.query(`truncate ${tablename}`, done);
   });
 
@@ -23,98 +28,101 @@ describe('user API test', () => {
 
   describe('POST /signin', () => {
     it('it should respond 200 status code with user id to signin data', async () => {
-      const response = await axios.post('/signin', {
+      const response = await agent.post('/signin').send({
         email: 'login@naver.com',
         password: 'test',
-      });
-      response.status.should.be.equal(200);
-      response.status.should.not.be.equal(undefined);
+      })
+        .catch((error) => {
+          console.log(error);
+        });
+      expect(response.status).to.equal(200);
+      expect(response.status).to.not.equal(undefined);
     });
 
     it('it should respond 404 status code with user not found text', async () => {
-      const response = await axios.post('/signin', {
+      const response = await agent.post('/users/signin').send({
         email: 'helloWorld@javascript.com',
         password: 'helloWorld',
       });
-      response.status.should.be.equal(404);
-      response.text.should.be.equal('unvalid user');
+      expect(response.status).to.equal(404);
+      expect(response.text).to.equal('unvalid user');
     });
 
     it('it should respond 404 status code with invalid password text', async () => {
-      const response = await axios.post('/signin', {
+      const response = await agent.post('/users/signin').send({
         email: 'login@naver.com',
         password: 'helloWorld',
       });
-      response.status.should.be.equal(404);
-      response.text.should.be.equal('invalid password');
+      expect(response.status).to.equal(404);
+      expect(response.text).to.equal('invalid password');
     });
   });
 
   describe('POST /signup', () => {
-    after(() => {
-      dbConnection.query('DELETE * FROM users WHERE email="tester@naver.com"', (err: string) => {
-        if (err) throw err;
-      });
-    });
+    // after(() => {
+    //   dbConnection.query('DELETE * FROM users WHERE email="tester@naver.com"', (err) => {
+    //     if (err) throw err;
+    //   });
+    // });
     it('it should respond 200 status code', async () => {
-      const response = await axios.post('/signup', {
-        email: 'uptester@naver.com',
+      const response = await agent.post('/users/signup').send({
+        email: 'login@naver.com',
         password: 'test',
       });
-      response.status.should.be.equal(200);
-      response.status.should.not.be.equal(undefined);
+      expect(response.status).to.equal(200);
+      expect(response.status).to.not.equal(undefined);
     });
 
-    it('it should respond 404', async () => {
-      const response = await axios.post('/signup').send({
-        email: 'helloWorld@javascript.com',
-        password: 'helloWorld',
+    it('it should respond 409', async () => {
+      const response = await agent.post('/users/signup').send({
+        email: 'login@javascript.com',
+        password: 'test',
       });
 
-      response.status.should.be.equal(404);
+      expect(response.status).to.equal(409);
     });
   });
 
   describe('PATCH /username', () => {
-    after(() => {
-      dbConnection.query('UPDATE users SET username="" WHERE username="tester"', (err: string) => {
-        if (err) throw err;
-      });
-    });
+    // after(() => {
+    //   dbConnection.query('UPDATE users SET username="" WHERE username="tester"', (err) => {
+    //     if (err) throw err;
+    //   });
+    // });
     it('it should respond 200 status code', async () => {
-      const response = await axios.patch('/user/name', {
+      const response = await agent.patch('/users/user/name').send({
         username: 'tester',
         session: { userEmail: 1 },
       });
-      response.status.should.be.equal(200);
-      response.status.should.not.be.equal(undefined);
+      expect(response.status).to.equal(200);
+      expect(response.status).to.not.equal(undefined);
     });
 
     it('it should respond 409', async () => {
-      const response = await axios.patch('/user/name', {
+      const response = await agent.patch('/users/user/name').send({
         username: '409tester',
       });
 
-      response.status.should.be.equal(409);
+      expect(response.status).to.equal(409);
     });
   });
 
   describe('get /user/exist', () => {
     it('it should respond 200 status code', async () => {
-      const response = await axios.post('/user/exist', {
+      const response = await agent.post('/users/user/exist').send({
         email: 'existTester@naver.com',
       });
-      response.status.should.be.equal(200);
-      response.status.should.not.be.equal(undefined);
+      expect(response.status).to.equal(200);
+      expect(response.status).to.not.equal(undefined);
     });
 
     it('it should respond 409', async () => {
-      const response = await axios.post('/user/exist', {
+      const response = await agent.post('/users/user/exist').send({
         email: 'login@javascript.com',
         password: 'helloWorld',
       });
 
-      response.status.should.be.equal(409);
+      expect(response.status).to.equal(409);
     });
   });
 });

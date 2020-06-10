@@ -1,5 +1,11 @@
 import { Router } from 'express';
+// import passport from 'passport';
+
 import users from './users';
+import oauth from './oauth';
+
+// const passport = require('passport');
+// require('../passport');
 // import messages from './messages';
 // import tracks from './tracks';
 // import schedules from './schedules';
@@ -10,7 +16,14 @@ router.get('/', (req: any, res: any) => {
   res.end('ok');
 });
 
+// router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+// router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/failed' }),
+//   (req, res) => {
+//     res.redirect('/');
+//   });
+
 router.use('/users', users);
+router.use('/oauth', oauth);
 // router.use('/messages', messages);
 // router.use('/tracks', tracks);
 // router.use('/schedules', schedules);

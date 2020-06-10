@@ -16,11 +16,11 @@ class User {
   @Column({ nullable: false })
   password: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   username: string;
 
   @Column({ default: 1 })
-  loginUount: number;
+  loginCount: number;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
   public createdAt: Date;

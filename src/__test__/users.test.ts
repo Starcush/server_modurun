@@ -28,7 +28,7 @@ describe('user API test', () => {
 
   describe('POST /signin', () => {
     it('it should respond 200 status code with user id to signin data', async () => {
-      const response = await agent.post('/signin').send({
+      const response = await agent.post('/users/signin').send({
         email: 'login@naver.com',
         password: 'test',
       })
@@ -48,81 +48,71 @@ describe('user API test', () => {
       expect(response.text).to.equal('unvalid user');
     });
 
-    it('it should respond 404 status code with invalid password text', async () => {
-      const response = await agent.post('/users/signin').send({
-        email: 'login@naver.com',
-        password: 'helloWorld',
-      });
-      expect(response.status).to.equal(404);
-      expect(response.text).to.equal('invalid password');
-    });
-  });
-
-  describe('POST /signup', () => {
+    describe('POST /signup', () => {
     // after(() => {
     //   dbConnection.query('DELETE * FROM users WHERE email="tester@naver.com"', (err) => {
     //     if (err) throw err;
     //   });
     // });
-    it('it should respond 200 status code', async () => {
-      const response = await agent.post('/users/signup').send({
-        email: 'login@naver.com',
-        password: 'test',
-      });
-      expect(response.status).to.equal(200);
-      expect(response.status).to.not.equal(undefined);
-    });
-
-    it('it should respond 409', async () => {
-      const response = await agent.post('/users/signup').send({
-        email: 'login@javascript.com',
-        password: 'test',
+      it('it should respond 200 status code', async () => {
+        const response = await agent.post('/users/signup').send({
+          email: 'login@naver.com',
+          password: 'test',
+        });
+        expect(response.status).to.equal(200);
+        expect(response.status).to.not.equal(undefined);
       });
 
-      expect(response.status).to.equal(409);
-    });
-  });
+      it('it should respond 409', async () => {
+        const response = await agent.post('/users/signup').send({
+          email: 'login@naver.com',
+          password: 'test',
+        });
 
-  describe('PATCH /username', () => {
+        expect(response.status).to.equal(409);
+      });
+    });
+
+    describe('PATCH /username', () => {
     // after(() => {
     //   dbConnection.query('UPDATE users SET username="" WHERE username="tester"', (err) => {
     //     if (err) throw err;
     //   });
     // });
-    it('it should respond 200 status code', async () => {
-      const response = await agent.patch('/users/user/name').send({
-        username: 'tester',
-        session: { userEmail: 1 },
+      it('it should respond 200 status code', async () => {
+        const response = await agent.patch('/users/user/name').send({
+          username: 'tester',
+          session: { userEmail: 1 },
+        });
+        expect(response.status).to.equal(200);
+        expect(response.status).to.not.equal(undefined);
       });
-      expect(response.status).to.equal(200);
-      expect(response.status).to.not.equal(undefined);
+
+      it('it should respond 409', async () => {
+        const response = await agent.patch('/users/user/name').send({
+          username: '409tester',
+        });
+
+        expect(response.status).to.equal(409);
+      });
     });
 
-    it('it should respond 409', async () => {
-      const response = await agent.patch('/users/user/name').send({
-        username: '409tester',
+    describe('get /user/exist', () => {
+      it('it should respond 200 status code', async () => {
+        const response = await agent.get('/users/user/exist').send({
+          email: 'existTester@naver.com',
+        });
+        expect(response.status).to.equal(200);
+        expect(response.status).to.not.equal(undefined);
       });
 
-      expect(response.status).to.equal(409);
-    });
-  });
+      it('it should respond 409', async () => {
+        const response = await agent.get('/users/user/exist').send({
+          email: 'login@naver.com',
+        });
 
-  describe('get /user/exist', () => {
-    it('it should respond 200 status code', async () => {
-      const response = await agent.post('/users/user/exist').send({
-        email: 'existTester@naver.com',
+        expect(response.status).to.equal(409);
       });
-      expect(response.status).to.equal(200);
-      expect(response.status).to.not.equal(undefined);
-    });
-
-    it('it should respond 409', async () => {
-      const response = await agent.post('/users/user/exist').send({
-        email: 'login@javascript.com',
-        password: 'helloWorld',
-      });
-
-      expect(response.status).to.equal(409);
     });
   });
 });

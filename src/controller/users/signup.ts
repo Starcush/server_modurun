@@ -15,13 +15,13 @@ export default {
     if (response) {
       res.status(409).send('User conflict');
     } else {
-      const cryptoPassword: any = userUtil.cyrptoPassword(password);
+      const cryptedPassword: any = userUtil.cryptoPassword(password);
       await getConnection()
         .createQueryBuilder()
         .insert()
         .into(User)
         .values([
-          { email, password: cryptoPassword },
+          { email, password: cryptedPassword },
         ])
         .execute();
       res.status(200).send('Sign up success');

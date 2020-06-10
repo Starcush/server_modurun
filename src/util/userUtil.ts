@@ -4,7 +4,7 @@ import * as jwt from 'jsonwebtoken';
 require('dotenv').config();
 
 export default {
-  cyrptoPassword: (data: string): any => {
+  cryptoPassword: (data: string): any => {
     const shasum = crypto.createHmac('sha512', 'secret');
     shasum.update(data);
     data = shasum.digest('hex');

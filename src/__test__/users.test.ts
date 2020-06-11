@@ -5,7 +5,7 @@ import server from '../server';
 const mysql = require('mysql');
 require('dotenv').config();
 
-const agent = request(server);
+const agent = request(server); // beforeAll 이나 afterall에서 관리해서 테스트 할때만 켜지게
 
 describe('user API test', () => {
   let dbConnection;
@@ -18,16 +18,60 @@ describe('user API test', () => {
     });
     dbConnection.connect();
 
-    const tablename = 'user';
-    dbConnection.query(`truncate ${tablename}`, done);
+    // const tablename = 'user';
+    // dbConnection.query(`truncate ${tablename}`, done); // 다 지운다
+    done();
   });
 
   afterEach(() => {
     dbConnection.end();
   });
 
+  describe('POST /signup', () => {
+    beforeEach(() => {
+      dbConnection.query('INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES ("1", "login@naver.com", "test", "tester", "1", now(), now())');
+    });
+    afterEach(async () => {
+      await dbConnection.query('DELETE FROM user WHERE email="login@naver.com"', (err) => {
+        if (err) throw err;
+      });
+    });
+    it('it should respond 200 status code', async () => {
+      const response = await agent.post('/users/signup').send({
+        email: 'signup@naver.com',
+        password: 'test',
+      })
+        .set({
+          Authorization: 'token',
+        });
+      expect(response.status).to.equal(200);
+      expect(response.status).to.not.equal(undefined);
+    });
+
+    it('it should respond 409', async () => {
+      const response = await agent.post('/users/signup').send({
+        email: 'login@naver.com',
+        password: 'test',
+      });
+
+      expect(response.status).to.equal(409);
+    });
+  });
+
+
   describe('POST /signin', () => {
+    // beforeEach insert
+    beforeEach(() => {
+      dbConnection.query('INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES ("1", "login@naver.com", "password", "tester", "1", now(), now())');
+    });
+    afterEach(async () => {
+      await dbConnection.query('DELETE FROM user WHERE email="login@naver.com"', (err) => {
+        if (err) throw err;
+      });
+    });
     it('it should respond 200 status code with user id to signin data', async () => {
+      // insert data
+
       const response = await agent.post('/users/signin').send({
         email: 'login@naver.com',
         password: 'test',
@@ -35,6 +79,8 @@ describe('user API test', () => {
         .catch((error) => {
           console.log(error);
         });
+        // 에러 테스트 추가
+      expect(response.error);
       expect(response.status).to.equal(200);
       expect(response.status).to.not.equal(undefined);
     });
@@ -48,37 +94,16 @@ describe('user API test', () => {
       expect(response.text).to.equal('unvalid user');
     });
 
-    describe('POST /signup', () => {
-    // after(() => {
-    //   dbConnection.query('DELETE * FROM users WHERE email="tester@naver.com"', (err) => {
-    //     if (err) throw err;
-    //   });
-    // });
-      it('it should respond 200 status code', async () => {
-        const response = await agent.post('/users/signup').send({
-          email: 'login@naver.com',
-          password: 'test',
-        });
-        expect(response.status).to.equal(200);
-        expect(response.status).to.not.equal(undefined);
-      });
-
-      it('it should respond 409', async () => {
-        const response = await agent.post('/users/signup').send({
-          email: 'login@naver.com',
-          password: 'test',
-        });
-
-        expect(response.status).to.equal(409);
-      });
-    });
-
+  
     describe('PATCH /username', () => {
-    // after(() => {
-    //   dbConnection.query('UPDATE users SET username="" WHERE username="tester"', (err) => {
-    //     if (err) throw err;
-    //   });
-    // });
+      beforeEach(() => {
+        dbConnection.query('INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES ("1", "login@naver.com", "password", "tester", "1", now(), now())');
+      });
+      afterEach(async () => {
+        await dbConnection.query('DELETE FROM user WHERE email="login@naver.com"', (err) => {
+          if (err) throw err;
+        });
+      });
       it('it should respond 200 status code', async () => {
         const response = await agent.patch('/users/user/name').send({
           username: 'tester',
@@ -98,6 +123,14 @@ describe('user API test', () => {
     });
 
     describe('get /user/exist', () => {
+      beforeEach(() => {
+        dbConnection.query('INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES ("1", "login@naver.com", "password", "tester", "1", now(), now())');
+      });
+      afterEach(async () => {
+        await dbConnection.query('DELETE FROM user WHERE email="login@naver.com"', (err) => {
+          if (err) throw err;
+        });
+      });
       it('it should respond 200 status code', async () => {
         const response = await agent.get('/users/user/exist').send({
           email: 'existTester@naver.com',

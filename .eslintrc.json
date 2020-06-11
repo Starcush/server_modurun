@@ -21,7 +21,6 @@
     "@typescript-eslint"
   ],
   "rules": {
-    "indent": ["error", 2],
     "import/extensions": ["error", "ignorePackages", {
       "js": "never",
       "jsx": "never",
@@ -30,7 +29,6 @@
       "json": "never"
     }]
   },
-
   "settings": {
     "import/resolver": {
       "node": {

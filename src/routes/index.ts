@@ -3,6 +3,7 @@ import { Router } from 'express';
 
 import users from './users';
 import oauth from './oauth';
+import tracks from './tracks';
 
 // const passport = require('passport');
 // require('../passport');
@@ -18,8 +19,7 @@ router.get('/', (req: any, res: any) => {
 
 router.use('/users', users);
 router.use('/oauth', oauth);
-// router.use('/messages', messages);
-// router.use('/tracks', tracks);
-// router.use('/schedules', schedules);
+router.use('/tracks', tracks);
+// router.use('/schedules', schedulesRouter);
 
 export default router;

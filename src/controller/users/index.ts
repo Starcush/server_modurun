@@ -1,10 +1,11 @@
-import signup from './signup';
-import user from './user';
+import userUrl from '../tracks/userUrl';
 
 export default {
-  // signin,
-  // signout: require('./signout'),
-  signup,
-  user,
-  // info: require('./info')
+  track: {
+    post: userUrl.post,
+    delete: userUrl.delete,
+    patch: userUrl.patch,
+    get: userUrl.get,
+    postRate: userUrl.postRate,
+  },
 };

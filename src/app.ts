@@ -1,9 +1,9 @@
+import { createConnection } from 'typeorm';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as morgan from 'morgan';
 import * as session from 'express-session';
-import { createConnection } from 'typeorm';
 import * as cookieParser from 'cookie-parser';
 import * as config from '../ormconfig';
 import router from './routes/index';
@@ -15,6 +15,8 @@ class App {
   public app: express.Application;
 
   public port: number;
+
+  public server: any;
 
   constructor(port) {
     if (!this.app) {
@@ -55,8 +57,12 @@ class App {
     this.app.use('/', router);
   }
 
+  close() {
+    this.server.close();
+  }
+
   public listen() {
-    this.app.listen(this.port, () => {
+    this.server = this.app.listen(this.port, () => {
       console.log(`App listening on the port ${this.port}`);
     });
   }

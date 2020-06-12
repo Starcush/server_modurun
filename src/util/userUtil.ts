@@ -21,8 +21,5 @@ export default {
     verify(token, callback) {
       return jwt.verify(token, process.env.JWT_SECRET, callback);
     },
-    // (err, decoded) => {
-    // if (err) return false;
-    // return decoded.data;
   },
 };

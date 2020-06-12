@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as morgan from 'morgan';
+import * as session from 'express-session';
 import { createConnection } from 'typeorm';
 import * as cookieParser from 'cookie-parser';
 import * as config from '../ormconfig';
@@ -31,8 +32,18 @@ class App {
       })
       .catch((error) => console.log(error));
     this.app.use(cookieParser());
-    this.app.use(cors());
+    this.app.use(cors({
+      origin: true,
+      credentials: true,
+    }));
     this.app.use(bodyParser.json());
+    this.app.use(
+      session({
+        secret: 'moduerun',
+        resave: false,
+        saveUninitialized: true,
+      }),
+    );
     this.app.use(
       bodyParser.urlencoded({
         extended: false,

@@ -1,17 +1,10 @@
-// import { Request, Response } from 'express';
-import { getConnection } from 'typeorm';
-import User from '../../entity/User';
 import userUtil from '../../util/userUtil';
+import userRepository from '../../repository/userRepository';
 
 export default {
   get: async (req, res) => {
     const { email } = req.query;
-
-    const response: any = await getConnection()
-      .getRepository(User)
-      .createQueryBuilder('user')
-      .where('user.email = :email', { email })
-      .getOne();
+    const response = await userRepository.getUserDataByEmail(email);
 
     if (response) {
       res.status(409).send('Email conflict');
@@ -22,26 +15,18 @@ export default {
 
   patch: async (req, res) => {
     const { username } = req.body;
-    const email: string = userUtil.jwt.verify(req.cookie.userToken, (err, decoded) => {
+
+    const email: string = userUtil.jwt.verify(req.session.userToken, (err, decoded) => {
       if (err) return false;
       return decoded.data;
     });
-    console.log(email);
-    const response: any = await getConnection()
-      .getRepository(User)
-      .createQueryBuilder('user')
-      .where('user.username = :username', { username })
-      .getOne();
+
+    const response: any = await userRepository.getUserDataByUsername(username);
 
     if (response) {
       res.status(409).send('Username conflict');
     } else {
-      await getConnection()
-        .createQueryBuilder()
-        .update(User)
-        .set({ username })
-        .where('email = :email', { email })
-        .execute();
+      userRepository.updateUsernameByEmail(email, username);
       res.status(200).send('Username updated');
     }
   },

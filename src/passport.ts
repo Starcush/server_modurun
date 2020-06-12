@@ -1,8 +1,4 @@
-import { getConnection } from 'typeorm';
-import User from './entity/User';
-
 const passport = require('passport');
-// const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 require('dotenv').config();
 
@@ -16,10 +12,11 @@ module.exports = () => {
   });
 
   passport.use(new GoogleStrategy({
-    clientID: '275812907413-q57kvr3a97kmsm4bg5tehlg7jorue6g1.apps.googleusercontent.com',
-    clientSecret: 'zq7EuweV2H2VNA2ANfcVuClu',
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: 'http://localhost:5000/oauth/google/callback',
   }, (async (accessToken, refreshToken, profile, done) => {
+    console.dir(accessToken);
     done(null, profile);
   })));
 };

@@ -16,12 +16,6 @@ router.get('/', (req: any, res: any) => {
   res.end('ok');
 });
 
-// router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-// router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/failed' }),
-//   (req, res) => {
-//     res.redirect('/');
-//   });
-
 router.use('/users', users);
 router.use('/oauth', oauth);
 // router.use('/messages', messages);

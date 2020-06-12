@@ -56,7 +56,7 @@ describe('ModueRun - Server tracks API test', () => {
       latitude: 37.206755,
       longitude: 127.107272,
       latitudeDelta: -0.010504,
-      longitudeDelta: 0.010504,
+      longitudeDelta: 0.020504,
     };
     it('it should return filtered track list when maxLength filter on', async () => {
       const filter = {
@@ -98,7 +98,12 @@ describe('ModueRun - Server tracks API test', () => {
       };
       const url = `/tracks/${JSON.stringify(filter)}/${JSON.stringify(userPosition)}/${JSON.stringify(area)}`;
       const response = await agent.get(encodeURI(url));
-      expect(response.body).to.deep.equal(TrackSeed.test);
+      expect(response.body).to.deep.equal([
+        TrackSeed.test[2],
+        TrackSeed.test[0],
+        TrackSeed.test[1],
+        TrackSeed.test[3],
+      ]);
     });
     it('it should return filtered track list when recent filter on', async () => {
       const filter = {
@@ -109,7 +114,12 @@ describe('ModueRun - Server tracks API test', () => {
       };
       const url = `/tracks/${JSON.stringify(filter)}/${JSON.stringify(userPosition)}/${JSON.stringify(area)}`;
       const response = await agent.get(encodeURI(url));
-      expect(response.body).to.deep.equal(TrackSeed.test.reverse());
+      expect(response.body).to.deep.equal([
+        TrackSeed.test[3],
+        TrackSeed.test[2],
+        TrackSeed.test[1],
+        TrackSeed.test[0],
+      ]);
     });
     it('it should return filtered tracks list when maxLength,distance,rate on', async () => {
       const filter = {
@@ -136,9 +146,9 @@ describe('ModueRun - Server tracks API test', () => {
       const url = `/tracks/${JSON.stringify(filter)}/${JSON.stringify(userPosition)}/${JSON.stringify(area)}`;
       const response = await agent.get(encodeURI(url));
       expect(response.body).to.deep.equal([
-        TrackSeed.test[0],
-        TrackSeed.test[1],
         TrackSeed.test[3],
+        TrackSeed.test[1],
+        TrackSeed.test[0],
       ]);
     });
     it('it should response 404 status code when the track cannot be found', async () => {
@@ -227,7 +237,7 @@ describe('ModueRun - Server tracks API test', () => {
   describe('GET /users/tracks', () => {
     it('it should response 200 status code when deleting track is sucsess', async () => {
       const response = await agent.get('/users/tracks/1');
-      expect(response.body).to.own.include([TrackSeed.test[0], TrackSeed.test[1]]);
+      expect(response.body).to.deep.equal([TrackSeed.test[0], TrackSeed.test[1], TrackSeed.test[2]]);
       expect(response.status).to.equal(200);
     });
     it('it should response 404 status code when not found userTrack', async () => {
@@ -238,17 +248,19 @@ describe('ModueRun - Server tracks API test', () => {
   describe('POST /users/tracks/rate', () => {
     it('it should response 200 status code when deleting track is sucsess', async () => {
       const response = await agent.post('/users/tracks/rate').send({
-        trackId: 1,
+        trackId: 3,
+        userId: 3,
         rate: 3,
       });
       expect(response.status).to.equal(200);
     });
-    it('it should response 404 status code when not found userTrack', async () => {
+    it('it should response 409 status code when confliced rate', async () => {
       const response = await agent.post('/users/tracks/rate').send({
-        trackId: 10,
+        trackId: 1,
+        userId: 1,
         rate: 3,
       });
-      expect(response.status).to.equal(404);
+      expect(response.status).to.equal(409);
     });
   });
 });

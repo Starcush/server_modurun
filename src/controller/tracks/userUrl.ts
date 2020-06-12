@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
-import { getConnection } from 'typeorm';
+import { getConnection, createQueryBuilder } from 'typeorm';
 import UserTrack from '../../entity/UserTrack';
+import Rate from '../../entity/Rate';
+import Track from '../../entity/Track';
 
 export default {
   post: async (req: Request, res: Response) => {
@@ -70,13 +72,66 @@ export default {
     TODO
     * 유저의 아이디를 원래는 토큰으로 받지만 url파라미터를 받아서 임의로 구현
      */
-    res.send(200);
+    const {
+      userId,
+    } = req.params;
+    // const rateRepo = await getConnection().getRepository(Rate);
+    // const findresult = await rateRepo.find({
+    //   join: {
+    //     alias: 'rate',
+    //     leftJoinAndSelect: {
+    //       track: 'rate.track',
+    //     },
+    //   },
+    //   where: {
+    //     user: userId,
+    //   },
+    // });
+    const findresult = await getConnection().getRepository(Rate).createQueryBuilder('rate')
+      .leftJoinAndSelect('rate.track', 'track')
+      .where('rate.user = :userid', { userid: userId })
+      .getMany();
+    if (findresult.length) {
+      const responseFormat = findresult.map((ele: Rate) => ({
+        trackTitle: ele.track.trackTitle,
+        origin: ele.track.origin,
+        destination: ele.track.destination,
+        route: ele.track.route,
+        trackLength: ele.track.trackLength,
+      }));
+      res.status(200).json(responseFormat);
+    } else {
+      res.send(404);
+    }
   },
   postRate: async (req: Request, res: Response) => {
     /*
     TODO
-    * 트랙의 아이디와 rate를 받아서 usertrack에 저장한다.
+    * 트랙의 아이디와 유저 아이디를 받아서 rate 테이블에 저장한다.
      */
-    res.send(200);
+    const {
+      trackId, userId, rate,
+    } = req.body;
+    const rateTrackRepo = await getConnection().getRepository(Rate);
+    const findresult = await rateTrackRepo.find({ where: { user: userId, track: trackId } });
+    if (!findresult.length) {
+      const result = await getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(Rate)
+        .values([{
+          rateValue: rate,
+          user: userId,
+          track: trackId,
+        }])
+        .execute();
+      if (result.identifiers.length > 0) {
+        res.send(200);
+      } else {
+        res.send(409);
+      }
+    } else {
+      res.send(409);
+    }
   },
 };

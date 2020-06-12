@@ -17,8 +17,7 @@
     "should": "^13.2.3",
     "ts-node": "^3.3.0",
     "tslint": "^6.1.2",
-    "tslint-config-airbnb": "^5.11.2",
-    "typescript": "3.3.3333"
+    "tslint-config-airbnb": "^5.11.2"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -31,6 +30,7 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "mysql": "^2.14.1",
+    "mysql2": "^2.1.0",
     "nodemon": "^2.0.4",
     "reflect-metadata": "^0.1.10",
     "socketio": "^1.0.0",
@@ -38,6 +38,7 @@
     "tslint-config-prettier": "^1.18.0",
     "typeorm": "0.2.25",
     "typeorm-seeding": "^1.6.1",
+    "typescript": "^3.9.5",
     "uninstall": "0.0.0"
   },
   "scripts": {

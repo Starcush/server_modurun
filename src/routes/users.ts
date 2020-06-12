@@ -6,6 +6,6 @@ const router = require('express').Router();
 router.post('/tracks', userController.default.track.post);
 router.delete('/tracks', userController.default.track.delete);
 router.patch('/tracks', userController.default.track.patch);
-router.get('/tracks', userController.default.track.get);
-router.post('/tracks/review', userController.default.track.postRate);
+router.get('/tracks/:userId', userController.default.track.get);
+router.post('/tracks/rate', userController.default.track.postRate);
 export default router;

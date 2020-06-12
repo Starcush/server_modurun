@@ -16,6 +16,8 @@ export const RateSeed = [
   },
   {
     rateValue: 5,
+    user: 1,
+    track: 3,
     createdAt: `${new Date()}`,
     updatedAt: `${new Date()}`,
   },

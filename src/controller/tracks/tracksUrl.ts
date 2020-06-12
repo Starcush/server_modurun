@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { getQuery } from '../../util/filterUtil';
+
 export default {
   get: async (req: Request, res: Response) => {
     const { filter, userposition, area } = req.params;

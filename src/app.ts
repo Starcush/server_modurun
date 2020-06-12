@@ -1,3 +1,4 @@
+import { createConnection } from 'typeorm';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
@@ -9,14 +10,20 @@ class App {
 
   public port: number;
 
+  public server: any;
+
   constructor(port) {
     this.app = express();
     this.port = port;
-
     this.initializeMiddlewares();
   }
 
   private initializeMiddlewares() {
+    createConnection().then(async () => {
+      console.log('db connect :)');
+    }).catch((err) => {
+      console.error(err);
+    });
     this.app.use(bodyParser.json());
     this.app.use(
       bodyParser.urlencoded({
@@ -28,8 +35,12 @@ class App {
     this.app.use('/', router);
   }
 
+  close() {
+    this.server.close();
+  }
+
   public listen() {
-    this.app.listen(this.port, () => {
+    this.server = this.app.listen(this.port, () => {
       console.log(`App listening on the port ${this.port}`);
     });
   }

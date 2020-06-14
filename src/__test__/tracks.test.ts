@@ -228,8 +228,8 @@ describe('ModueRun - Server tracks API test', () => {
     });
     it('it should response 404 status code when not found userTrack', async () => {
       const response = await agent.delete('/users/tracks').send({
-        trackId: 1,
-        userId: 2,
+        trackId: 10,
+        userId: 20,
       });
       expect(response.status).to.equal(404);
     });
@@ -248,7 +248,7 @@ describe('ModueRun - Server tracks API test', () => {
   describe('POST /users/tracks/rate', () => {
     it('it should response 200 status code when deleting track is sucsess', async () => {
       const response = await agent.post('/users/tracks/rate').send({
-        trackId: 3,
+        trackId: 1,
         userId: 3,
         rate: 3,
       });

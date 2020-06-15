@@ -18,13 +18,8 @@ router.get('/', (req: any, res: any) => {
 
 router.use('/users', users);
 router.use('/oauth', oauth);
-<<<<<<< HEAD
-router.use('/tracks', tracks);
-// router.use('/schedules', schedulesRouter);
-=======
 router.use('/messages', messages);
 // router.use('/tracks', tracks);
 // router.use('/schedules', schedules);
->>>>>>> f80ace41a929cd435630ac3208a563e557e42add
 
 export default router;

@@ -4,9 +4,11 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as morgan from 'morgan';
 import * as session from 'express-session';
+import * as socketIO from 'socket.io';
 import * as cookieParser from 'cookie-parser';
 import * as config from '../ormconfig';
 import router from './routes/index';
+
 
 const passport = require('passport');
 require('./passport')(passport);
@@ -18,11 +20,13 @@ class App {
 
   public server: any;
 
+  public io: socketIO.Server;
+
   constructor(port) {
     if (!this.app) {
       this.app = express();
       this.port = port;
-
+      this.io = socketIO(this.server);
       this.initializeMiddlewares();
     }
   }
@@ -55,6 +59,17 @@ class App {
     this.app.use(passport.session());
     this.app.use(morgan('dev'));
     this.app.use('/', router);
+
+    this.io.on('connection', (socket) => {
+      console.log('user connect');
+      socket.on('chat message', (msg) => {
+        console.log(msg);
+        this.io.emit('chat message', msg);
+      });
+      socket.on('disconnect', () => {
+        console.log('user out');
+      });
+    });
   }
 
   close() {
@@ -62,7 +77,7 @@ class App {
   }
 
   public listen() {
-    this.server = this.app.listen(this.port, () => {
+    this.server = this.app.listen(this.port, () => { 
       console.log(`App listening on the port ${this.port}`);
     });
   }

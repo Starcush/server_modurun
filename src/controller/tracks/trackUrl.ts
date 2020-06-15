@@ -10,9 +10,9 @@ export default {
     } = req.body;
     const newTrack = new Track();
     newTrack.trackTitle = trackTitle;
-    newTrack.origin = origin;
-    newTrack.destination = destination;
-    newTrack.route = route;
+    newTrack.origin = JSON.stringify(origin);
+    newTrack.destination = JSON.stringify(destination);
+    newTrack.route = JSON.stringify(route);
     newTrack.trackLength = trackLength;
     await trackRepository.insertTrackToDB(newTrack);
     res.send(200);

@@ -11,6 +11,7 @@ export default {
       destination: ele.destination,
       route: ele.route,
       trackLength: ele.trackLength,
+      rate: ele.rate,
     }));
     if (tracks.length > 0) {
       res.status(200).json(responseFormat);

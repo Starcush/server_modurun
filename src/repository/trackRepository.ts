@@ -27,7 +27,7 @@ export default {
       .createQueryBuilder()
       .delete()
       .from(Track)
-      .where('trackTitle = :title', { title: trackId })
+      .where('id = :id', { id: trackId })
       .execute();
     return response;
   },
@@ -66,12 +66,13 @@ export default {
     return null;
   },
   deleteUsersTrackById: async (userId: number, trackId: number) => {
+    console.log(`${trackId},${userId}`);
     const response = await getConnection()
       .createQueryBuilder()
       .delete()
       .from(UserTrack)
-      .where('trackid = :trackid', { trackid: trackId })
-      .andWhere('userid = :userid', { userid: userId })
+      .where('trackId = :trackid', { trackid: trackId })
+      .andWhere('userId = :userid', { userid: userId })
       .execute();
     return response;
   },

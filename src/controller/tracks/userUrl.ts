@@ -40,7 +40,7 @@ export default {
     const {
       trackId,
     } = req.body;
-    const result = await trackRepository.deleteUsersTrackById(trackId, userId);
+    const result = await trackRepository.deleteUsersTrackById(userId, trackId);
     if (result.affected > 0) {
       res.send(200);
     } else {

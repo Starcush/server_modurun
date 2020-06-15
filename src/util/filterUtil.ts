@@ -47,24 +47,43 @@ function distanceFrom(points: points): number {
 
 // eslint-disable-next-line max-len
 export const getQuery = async (filter: filterType, userPosition: userPositionType, area: areaType) => {
+  if (filter.rate) {
+    let findresult = await getConnection()
+      .query(`SELECT id,trackTitle,origin,destination,route,rate
+              FROM
+              (SELECT rate.trackId,AVG(rate.rateValue) AS rate
+              FROM rate
+              GROUP BY rate.trackId) test
+              RIGHT JOIN track ON track.id = test.trackId
+              WHERE trackLength < ${filter.maxLength}
+              ORDER BY rate DESC
+              `);
+    if (findresult.length !== 0) {
+      if (filter.distance > 0) {
+        findresult = findresult.filter((ele) => {
+          const origin = JSON.parse(ele.origin);
+          return filter.distance > distanceFrom([origin, userPosition]) * 1000;
+        });
+      }
+      findresult = findresult.filter((ele) => {
+        const origin = JSON.parse(ele.origin);
+        return (area.latitude > origin.latitude
+          && ((area.latitude + area.latitudeDelta) < origin.latitude))
+          && (area.longitude < origin.longitude
+            && ((area.longitude + area.longitudeDelta) > origin.longitude));
+      });
+    }
+    return findresult;
+  }
   let queryBuilder = await getConnection().getRepository(Track).createQueryBuilder('track');
   if (filter.maxLength > 0) {
     queryBuilder = queryBuilder.andWhere('track.trackLength < :maxLength', { maxLength: filter.maxLength });
-  }
-  if (filter.rate) {
-    queryBuilder = queryBuilder.leftJoinAndSelect('track.rates', 'rate').orderBy('rate.rateValue', 'DESC');
   }
   if (filter.recent) {
     queryBuilder = queryBuilder.orderBy('createdAt', 'DESC');
   }
   let tracks = await queryBuilder.getMany();
   if (tracks.length !== 0) {
-    /*
-      TODO
-     * userposition 과 area를 이용해서 필터링 구현
-     // * userposition필터링 구현
-    //  * area필터링
-    */
     if (filter.distance > 0) {
       tracks = tracks.filter((ele) => {
         const origin = JSON.parse(ele.origin);

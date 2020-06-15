@@ -20,9 +20,12 @@ export default {
           responseJson.isFirstLogin = true;
         }
         userRepository.increaseLoginCount(response.loginCount, email);
-
+        const userInfo = {
+          email,
+          userId: response.id,
+        };
         responseJson.text = 'Signin Success';
-        const token = userUtil.jwt.sign(email);
+        const token = userUtil.jwt.sign(userInfo);
         req.session.userToken = token;
         res.status(200).send(responseJson);
       }

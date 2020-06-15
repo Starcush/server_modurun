@@ -3,11 +3,10 @@ import { Router } from 'express';
 
 import users from './users';
 import oauth from './oauth';
-import tracks from './tracks';
+import messages from './messages';
 
 // const passport = require('passport');
 // require('../passport');
-// import messages from './messages';
 // import tracks from './tracks';
 // import schedules from './schedules';
 
@@ -19,7 +18,13 @@ router.get('/', (req: any, res: any) => {
 
 router.use('/users', users);
 router.use('/oauth', oauth);
+<<<<<<< HEAD
 router.use('/tracks', tracks);
 // router.use('/schedules', schedulesRouter);
+=======
+router.use('/messages', messages);
+// router.use('/tracks', tracks);
+// router.use('/schedules', schedules);
+>>>>>>> f80ace41a929cd435630ac3208a563e557e42add
 
 export default router;

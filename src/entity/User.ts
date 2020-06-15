@@ -27,7 +27,7 @@ class User {
   loginCount: number;
 
   @OneToMany((type) => Rate, (rate) => rate.user)
-  rate: Rate[];
+  rates: Rate[];
 
   @OneToMany((type) => UserTrack, (userTrack) => userTrack.user)
   userTracks: UserTrack[];

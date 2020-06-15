@@ -1,7 +1,9 @@
-// import * as messageController from '../controller/schedules/index';
+import messages from '../controller/messages/messages';
 
-// const router = require('express').Router();
 
-// router.get('/', messageController);
+const router = require('express').Router();
 
-// export default router;
+router.get('/messages', messages.get);
+
+
+export default router;

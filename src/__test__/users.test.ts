@@ -33,10 +33,9 @@ describe('user API test', () => {
 
   describe('POST /signup', () => {
     beforeEach((done) => {
-      // const password = userUtil.cryptoPassword('test');
-      // const queryStr = 'INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", ?, "tester", 1, now(), now())';
-      // dbConnection.query(queryStr, password);
-      // dbConnection.query('INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", {password}, "tester", 1, now(), now())');
+      const password = userUtil.cryptoPassword('test');
+      const queryStr = 'INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", ?, "tester", 1, now(), now())';
+      dbConnection.query(queryStr, password);
       done();
     });
     afterEach(async () => {
@@ -61,7 +60,6 @@ describe('user API test', () => {
         email: 'login@naver.com',
         password: 'test',
       });
-      console.dir(response.text);
       expect(response.status).to.equal(409);
     });
   });
@@ -70,16 +68,9 @@ describe('user API test', () => {
   describe('POST /signin', () => {
     // beforeEach insert
     beforeEach((done) => {
-      // dbConnection.query('INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", "password", "tester", 1, now(), now())');
-      // agent.post('/users/signup').send({
-      //   email: 'login@naver.com',
-      //   password: 'test',
-      // });
       // const password = userUtil.cryptoPassword('test');
       // const queryStr = 'INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", ?, "tester", 1, now(), now())';
       // dbConnection.query(queryStr, password);
-      // const password = userUtil.cryptoPassword('test');
-      // dbConnection.query(`INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", ${password}, "tester", 1, now(), now())`);
       done();
     });
     afterEach(async () => {
@@ -107,7 +98,6 @@ describe('user API test', () => {
         email: 'helloWorld@javascript.com',
         password: 'helloWorld',
       });
-      // console.dir(response);
       expect(response.statusCode).to.equal(404);
       expect(response.body.text).to.equal('Signin failed');
     });
@@ -116,29 +106,21 @@ describe('user API test', () => {
   describe('PATCH /username', () => {
     beforeEach(async (done) => {
       // dbConnection.query('INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", "password", "tester", 1, now(), now())');
-      // agent.post('/users/signup').send({
-      //   email: 'login@naver.com',
-      //   password: 'test',
-      // });
       const password = userUtil.cryptoPassword('test');
       const queryStr = 'INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", ?, "tester", 1, now(), now())';
       dbConnection.query(queryStr, password)
         .then(() => {
           done();
         });
-      // const password = userUtil.cryptoPassword('test');
-      // dbConnection.query(`INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", ${password}, "tester", 1, now(), now())`);
-      // dbConnection.query('UPDATE user SET username="tester" WHERE email="login@naver.com"');
     });
     afterEach(async () => {
-      // await dbConnection.query('DELETE FROM user WHERE email="login@naver.com"', (err) => {
-      //   if (err) throw err;
-      // });
+      await dbConnection.query('DELETE FROM user WHERE email="login@naver.com"', (err) => {
+        if (err) throw err;
+      });
     });
     it('it should respond 200 status code', async () => {
       const response = await agent.patch('/users/user/name').send({
         username: 'tester',
-        // session: { userEmail: 1 },
       });
       expect(response.status).to.equal(200);
       expect(response.status).to.not.equal(undefined);
@@ -155,22 +137,15 @@ describe('user API test', () => {
 
   describe('get /user/exist', () => {
     beforeEach((done) => {
-      // dbConnection.query('INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", "password", "tester", 1, now(), now())');
-      // agent.post('/users/signup').send({
-      //   email: 'login@naver.com',
-      //   password: 'test',
-      // });
       // const password = userUtil.cryptoPassword('test');
       // const queryStr = 'INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", ?, "tester", 1, now(), now())';
       // dbConnection.query(queryStr, password);
-      // const password = userUtil.cryptoPassword('test');
-      // dbConnection.query(`INSERT INTO user (id, email, password, username, loginCount, createdAt, updatedAt) VALUES (1, "login@naver.com", ${password}, "tester", 1, now(), now())`);
       done();
     });
     afterEach(async () => {
-      // await dbConnection.query('DELETE FROM user WHERE email="login@naver.com"', (err) => {
-      //   if (err) throw err;
-      // });
+      await dbConnection.query('DELETE FROM user WHERE email="login@naver.com"', (err) => {
+        if (err) throw err;
+      });
     });
     it('it should respond 200 status code', async () => {
       const response = await agent.get('/users/user/exist').send({

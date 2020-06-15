@@ -15,6 +15,6 @@ router.get('/signout', signout.get);
 router.post('/tracks', userUrl.post);
 router.delete('/tracks', userUrl.delete);
 router.patch('/tracks', userUrl.patch);
-router.get('/tracks/:userId', userUrl.get);
+router.get('/tracks/', userUrl.get);
 router.post('/tracks/rate', userUrl.postRate);
 export default router;

@@ -26,7 +26,6 @@ class App {
     if (!this.app) {
       this.app = express();
       this.port = port;
-      this.io = socketIO(this.server);
       this.initializeMiddlewares();
     }
   }
@@ -59,17 +58,6 @@ class App {
     this.app.use(passport.session());
     this.app.use(morgan('dev'));
     this.app.use('/', router);
-
-    this.io.on('connection', (socket) => {
-      console.log('user connect');
-      socket.on('chat message', (msg) => {
-        console.log(msg);
-        this.io.emit('chat message', msg);
-      });
-      socket.on('disconnect', () => {
-        console.log('user out');
-      });
-    });
   }
 
   close() {
@@ -77,8 +65,35 @@ class App {
   }
 
   public listen() {
-    this.server = this.app.listen(this.port, () => { 
+    this.server = this.app.listen(this.port, () => {
       console.log(`App listening on the port ${this.port}`);
+    });
+    this.io = socketIO(this.server);
+    this.io.on('connection', (socket) => {
+      console.log('user connect');
+
+      socket.on('leaveRoom', (scheduleId, name) => {
+        socket.leave(scheduleId, () => {
+          console.log(`${name} leave a ${scheduleId}`);
+          this.io.to(scheduleId).emit('leaveRoom', scheduleId, name);
+        });
+      });
+
+
+      socket.on('joinRoom', (scheduleId, name) => {
+        socket.join(scheduleId, () => {
+          console.log(`${name} join a ${scheduleId}`);
+          this.io.to(scheduleId).emit('joinRoom', scheduleId, name);
+        });
+      });
+
+      socket.on('chat message', (msg) => {
+        this.io.emit('chat message', msg);
+      });
+
+      socket.on('disconnect', () => {
+        console.log('user out');
+      });
     });
   }
 }

@@ -6,7 +6,7 @@ import oauth from '../controller/users/oauth';
 const router = require('express').Router();
 // const passport = require('passport');
 
-router.get('/google', oauth.googleLogin);
+router.post('/google', oauth.googleLogin);
 
 // router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }), //클라이언트에서 받은 사용자 정보를 세션에 담음.
 //   router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/failed' }),

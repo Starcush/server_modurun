@@ -6,7 +6,7 @@ export default {
     const messages = await messageRepository.getScheduleMessages(scheduleId, page);
 
     if (!messages) {
-      res.status(404).send('Not fount messages');
+      res.status(404).send('Not found messages');
     } else {
       res.status(200).send(messages);
     }

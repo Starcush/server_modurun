@@ -5,6 +5,7 @@ import {
 } from 'typeorm';
 import Rate from './Rate';
 import UserTrack from './UserTrack';
+import Message from './Message';
 
 @Entity()
 class User {
@@ -31,6 +32,9 @@ class User {
 
   @OneToMany((type) => UserTrack, (userTrack) => userTrack.user)
   userTracks: UserTrack[];
+
+  @OneToMany((type) => Message, (message) => message.userId)
+  messages: Message[];
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
   public createdAt: Date;

@@ -1,14 +1,13 @@
 import { getConnection } from 'typeorm';
-import Message from '../entity/Message';
 
 export default {
   getScheduleMessages: async (scheduleId: number, page: number) => {
     const response = await getConnection()
-      .getRepository(Message)
-      .createQueryBuilder('user')
-      .where('user.email = :email', { email })
-      .orderBy({ 'user.createdAt': 'DESC' })
-      .getOne();
+      .query(`SELECT u.username, m.message
+      FROM message m LEFT JOIN user u ON m.userId = u.id
+      WHERE m.scheduleId = ${scheduleId}
+      ORDER BY m.createdAt DESC
+      LIMIT 10 OFFSET ${page * 10};`);
     return response;
   },
 };

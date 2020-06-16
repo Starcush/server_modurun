@@ -68,6 +68,7 @@ class App {
     this.server = this.app.listen(this.port, () => {
       console.log(`App listening on the port ${this.port}`);
     });
+
     this.io = socketIO(this.server);
     this.io.on('connection', (socket) => {
       console.log('user connect');
@@ -79,7 +80,6 @@ class App {
         });
       });
 
-
       socket.on('joinRoom', (scheduleId, name) => {
         socket.join(scheduleId, () => {
           console.log(`${name} join a ${scheduleId}`);
@@ -87,8 +87,8 @@ class App {
         });
       });
 
-      socket.on('chat message', (msg) => {
-        this.io.emit('chat message', msg);
+      socket.on('chat message', (name, msg) => {
+        this.io.emit('chat message', `${name} ${msg}`);
       });
 
       socket.on('disconnect', () => {

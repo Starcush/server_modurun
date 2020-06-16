@@ -10,6 +10,7 @@ export default {
       .createQueryBuilder('track')
       .where('track.id = :id', { id: trackId })
       .getOne();
+    console.log(resultTrack.createdAt.toString() === new Date('2020-06-16 15:34:49.000000').toString());
     if (resultTrack) {
       const response = {
         trackTitle: resultTrack.trackTitle,

@@ -11,6 +11,7 @@ export default {
 
     const responseJson = {
       isFirstLogin: false,
+      username: '',
       text: 'Signin failed',
     };
 
@@ -19,6 +20,7 @@ export default {
         if (response.loginCount === 1) {
           responseJson.isFirstLogin = true;
         }
+        responseJson.username = response.username;
         userRepository.increaseLoginCount(response.loginCount, email);
         const userInfo = {
           email,
@@ -26,6 +28,7 @@ export default {
         };
         responseJson.text = 'Signin Success';
         const token = userUtil.jwt.sign(userInfo);
+        // console.log(token);
         req.session.userToken = token;
         res.status(200).send(responseJson);
       }

@@ -6,6 +6,8 @@ import {
 import Rate from './Rate';
 import UserTrack from './UserTrack';
 import UserSchedule from './UserSchedule';
+import Message from './Message';
+
 
 @Entity()
 class User {
@@ -36,6 +38,10 @@ class User {
 
   @OneToMany((type) => UserSchedule, (userSchedule) => userSchedule.user)
   userSchedules: UserSchedule[];
+
+  @OneToMany((type) => Message, (message) => message.userId)
+  messages: Message[];
+
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
   public createdAt: Date;

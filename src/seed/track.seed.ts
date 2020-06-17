@@ -99,7 +99,7 @@ let beforeLength = [
           }`,
     destination: `{
             "latitude": 37.203536,
-            "longitude": 127.117928
+            "longitude": 127.119885
           }`,
     route: `[
   {
@@ -142,7 +142,7 @@ const addTrack = Array(100).fill({
     "longitude": 127.116066
   }
 ]`,
-}, 0, 100);
+}, 0, 50);
 beforeLength = beforeLength.concat(addTrack);
 
 export const TrackSeed = {

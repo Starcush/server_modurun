@@ -1,13 +1,11 @@
-import * as trackController from '../controller/tracks/index';
+import tracksController from '../controller/tracks/tracks.Controller';
+import trackController from '../controller/tracks/track.Controller';
 
 const router = require('express').Router();
 
-router.get('/:filter/:userposition/:area', trackController.default.get);
-router.post('/track', trackController.default.track.post);
-router.get('/track/:trackid', trackController.default.track.get);
-router.delete('/track/:trackid', trackController.default.track.delete);
-// router.delete('/user', trackController.default.user.delete);
-// router.post('/user', trackController.default.user.post);
-// router.patch('/user', trackController.default.user.patch);
+router.get('/:filter/:userposition/:area', tracksController.get);
+router.post('/track', trackController.post);
+router.get('/track/:trackid', trackController.get);
+router.delete('/track/:trackid', trackController.delete);
 
 export default router;

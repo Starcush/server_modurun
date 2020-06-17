@@ -1,4 +1,4 @@
-import userUrl from '../tracks/userUrl';
+import userUrl from '../tracks/usersTracks.Controller';
 
 export default {
   track: {

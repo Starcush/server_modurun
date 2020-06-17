@@ -15,6 +15,7 @@
     "eslint-plugin-import": "^2.21.0",
     "mocha": "^7.2.0",
     "should": "^13.2.3",
+    "supertest-session": "^4.0.0",
     "ts-node": "^3.3.0",
     "tslint": "^6.1.2",
     "tslint-config-airbnb": "^5.11.2"
@@ -56,8 +57,10 @@
     "start": "ts-node src/server.ts",
     "usertest": "npx mocha src/__test__/users.test.ts",
     "tracktest": "node_modules/.bin/mocha -r node_modules/ts-node/register src/__test__/tracks.test.ts",
+    "scheduletest": "node_modules/.bin/mocha -r node_modules/ts-node/register src/__test__/schedules.test.ts",
     "migrationRun": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:run",
-    "migrationRevert": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:revert"
+    "migrationRevert": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:revert",
+    "migrationGenerate": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:generate -n"
   },
   "standard": {
     "env": [

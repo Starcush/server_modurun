@@ -28,6 +28,7 @@ export default {
         };
         responseJson.text = 'Signin Success';
         const token = userUtil.jwt.sign(userInfo);
+        // console.log(token);
         req.session.userToken = token;
         res.status(200).send(responseJson);
       }

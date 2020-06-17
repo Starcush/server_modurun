@@ -44,7 +44,5 @@ export default {
       .catch((error) => {
         res.status(500).send(error);
       });
-    // const email: string = req.user.emails[0].value;
-    // const { email } = req.body;
   },
 };

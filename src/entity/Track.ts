@@ -5,6 +5,7 @@ import {
 } from 'typeorm';
 import Rate from './Rate';
 import UserTrack from './UserTrack';
+import Schedule from './Schedule';
 
 @Entity()
 class Track {
@@ -34,6 +35,9 @@ class Track {
 
   @OneToMany((type) => UserTrack, (userTrack) => userTrack.track)
   userTracks: UserTrack[];
+
+  @OneToMany((type) => Schedule, (schedule) => schedule.track)
+  schedules: Schedule[];
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
   public createdAt: Date;

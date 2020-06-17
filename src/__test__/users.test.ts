@@ -6,7 +6,7 @@ import userUtil from '../util/userUtil';
 const mysql = require('mysql');
 require('dotenv').config();
 
-const agent = request(server); // beforeAll 이나 afterall에서 관리해서 테스트 할때만 켜지게
+const agent = request(server);
 
 describe('user API test', () => {
   let dbConnection;
@@ -48,9 +48,6 @@ describe('user API test', () => {
         email: 'signup@naver.com',
         password: 'test',
       });
-        // .set({
-        //   Authorization: 'token',
-        // });
       expect(response.status).to.equal(200);
       expect(response.status).to.not.equal(undefined);
     });

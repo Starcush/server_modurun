@@ -17,10 +17,10 @@ class UserTrack {
   @Column({ default: false, nullable: false })
   bookmark: boolean;
 
-  @ManyToOne((type) => User, (user) => user.userTracks)
+  @ManyToOne((type) => User, (user) => user.userTracks, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne((type) => Track, (track) => track.userTracks)
+  @ManyToOne((type) => Track, (track) => track.userTracks, { onDelete: 'CASCADE' })
   track: Track;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })

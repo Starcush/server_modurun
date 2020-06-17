@@ -1,8 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
-
-import * as request from 'supertest';
+import * as session from 'supertest-session';
 import { expect } from 'chai';
-// import app from '../server';
 import { TrackSeed } from '../seed/track.seed';
 import App from '../app';
 
@@ -35,12 +33,18 @@ const fakedata = {
 
 const app = new App(5000);
 app.listen();
-const agent = request(app.app);
+// const agent = request(app.app);
+const agent = session(app.app);
 
 describe('ModueRun - Server tracks API test', () => {
-  before(async (done) => {
-    console.log('테스트 시작');
-    done();
+  beforeEach((done) => {
+    agent.post('/users/signin')
+      .send({ email: 'test@gmail.com', password: '1234' })
+      .expect(200)
+      .end((err) => {
+        if (err) return done(err);
+        return done();
+      });
   });
   after((done) => {
     app.close();
@@ -190,14 +194,12 @@ describe('ModueRun - Server tracks API test', () => {
     it('it should response 200 status code when saving track in userTrack list is sucsess', async () => {
       const response = await agent.post('/users/tracks').send({
         trackId: 1,
-        userId: 1,
       });
       expect(response.status).to.equal(200);
     });
     it('it should response 409 status code when saving track is conflicted', async () => {
       const response = await agent.post('/users/tracks').send({
         trackId: 1,
-        userId: 1,
       });
       expect(response.status).to.equal(409);
     });
@@ -206,14 +208,12 @@ describe('ModueRun - Server tracks API test', () => {
     it('it should response 200 status code when bookmarking track is sucsess', async () => {
       const response = await agent.patch('/users/tracks').send({
         trackId: 1,
-        userId: 1,
       });
       expect(response.status).to.equal(200);
     });
     it('it should response 400 status code when not found track', async () => {
       const response = await agent.patch('/users/tracks').send({
         trackId: 1,
-        userId: 3,
       });
       expect(response.status).to.equal(400);
     });
@@ -222,14 +222,12 @@ describe('ModueRun - Server tracks API test', () => {
     it('it should response 200 status code when deleting track is sucsess', async () => {
       const response = await agent.delete('/users/tracks').send({
         trackId: 1,
-        userId: 1,
       });
       expect(response.status).to.equal(200);
     });
     it('it should response 404 status code when not found userTrack', async () => {
       const response = await agent.delete('/users/tracks').send({
         trackId: 10,
-        userId: 20,
       });
       expect(response.status).to.equal(404);
     });
@@ -237,7 +235,10 @@ describe('ModueRun - Server tracks API test', () => {
   describe('GET /users/tracks', () => {
     it('it should response 200 status code when deleting track is sucsess', async () => {
       const response = await agent.get('/users/tracks/1');
-      expect(response.body).to.deep.equal([TrackSeed.test[0], TrackSeed.test[1], TrackSeed.test[2]]);
+      expect(response.body).to.deep.equal([
+        TrackSeed.test[0],
+        TrackSeed.test[1],
+        TrackSeed.test[2]]);
       expect(response.status).to.equal(200);
     });
     it('it should response 404 status code when not found userTrack', async () => {
@@ -249,7 +250,6 @@ describe('ModueRun - Server tracks API test', () => {
     it('it should response 200 status code when deleting track is sucsess', async () => {
       const response = await agent.post('/users/tracks/rate').send({
         trackId: 1,
-        userId: 3,
         rate: 3,
       });
       expect(response.status).to.equal(200);
@@ -257,7 +257,6 @@ describe('ModueRun - Server tracks API test', () => {
     it('it should response 409 status code when confliced rate', async () => {
       const response = await agent.post('/users/tracks/rate').send({
         trackId: 1,
-        userId: 1,
         rate: 3,
       });
       expect(response.status).to.equal(409);

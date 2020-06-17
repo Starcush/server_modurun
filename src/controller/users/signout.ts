@@ -1,6 +1,5 @@
 export default {
   get: (req, res) => {
-    // req.logout();
     if (req.session.userToken) {
       req.session.destroy((err) => {
         if (err) {

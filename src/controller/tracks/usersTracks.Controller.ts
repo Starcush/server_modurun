@@ -13,6 +13,7 @@ export default {
       return decoded.data;
     });
     const { userId } = userInfo;
+    console.log(`유저아이디  ${userId}`);
     const {
       trackId,
     } = req.body;

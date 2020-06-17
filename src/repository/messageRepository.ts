@@ -1,4 +1,5 @@
 import { getConnection } from 'typeorm';
+import Message from '../entity/Message';
 
 export default {
   getScheduleMessages: async (scheduleId: number, page: number) => {
@@ -9,5 +10,15 @@ export default {
       ORDER BY m.createdAt DESC
       LIMIT 10 OFFSET ${page * 10};`);
     return response;
+  },
+  insertUserChatting: async (scheduleId, userId, message) => {
+    await getConnection()
+      .createQueryBuilder()
+      .insert()
+      .into(Message)
+      .values([
+        { scheduleId, userId, message },
+      ])
+      .execute();
   },
 };

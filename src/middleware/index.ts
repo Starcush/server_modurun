@@ -3,6 +3,7 @@ import userRepository from '../repository/userRepository';
 
 export default {
   verifyToken: (req, res, next) => {
+    console.log(req)
     const token = req.session.userToken;
     if (!token) {
       res.status(403).send('Not logged in');

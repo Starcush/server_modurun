@@ -8,6 +8,9 @@ import * as socketIO from 'socket.io';
 import * as cookieParser from 'cookie-parser';
 import * as config from '../ormconfig';
 import router from './routes/index';
+import userUtil from './util/userUtil';
+import index from './middleware/index';
+import messageRepository from './repository/messageRepository';
 
 
 const passport = require('passport');
@@ -70,25 +73,29 @@ class App {
     });
 
     this.io = socketIO(this.server);
-    this.io.on('connection', (socket) => {
+    this.io.use((socket, next) => {
+      console.dir(socket);
+      index.verifyToken(socket.req, socket.res, next);
+    }).on('connection', (socket) => {
       console.log('user connect');
 
       socket.on('leaveRoom', (scheduleId, name) => {
         socket.leave(scheduleId, () => {
           console.log(`${name} leave a ${scheduleId}`);
-          this.io.to(scheduleId).emit('leaveRoom', scheduleId, name);
+          // this.io.to(scheduleId).emit('leaveRoom', scheduleId, name);
         });
       });
 
-      socket.on('joinRoom', (scheduleId, name) => {
+      socket.on('joinRoom', (scheduleId, username) => {
         socket.join(scheduleId, () => {
-          console.log(`${name} join a ${scheduleId}`);
-          this.io.to(scheduleId).emit('joinRoom', scheduleId, name);
+          console.log(`${username} join a ${scheduleId}`);
+          this.io.to(scheduleId).emit('joinRoom', scheduleId, username);
         });
       });
 
-      socket.on('chat message', (name, msg) => {
-        this.io.emit('chat message', `${name} ${msg}`);
+      socket.on('chat message', (scheduleId, userId, username, message) => {
+        messageRepository.insertUserChatting(scheduleId, userId, message);
+        this.io.to(scheduleId).emit('chat message', scheduleId, userId, username, message);
       });
 
       socket.on('disconnect', () => {

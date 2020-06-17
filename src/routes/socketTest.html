@@ -57,6 +57,7 @@
 <script>
     $(function () {
         const socket = io();
+        
         $('form').submit(function (e) {
             e.preventDefault();
             socket.emit('joinRoom', '2', 'tester')

@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-properties */
 /* eslint-disable import/prefer-default-export */
 import { getConnection } from 'typeorm';
-import Track from '../entity/Track';
+import { filterDistance, filterArea, filterLength } from './distanceUtil';
 
 type gelocation = {
   latitude: number,
@@ -25,78 +25,96 @@ interface areaType {
   longitudeDelta: number,
 }
 
-function distanceFrom(points: points): number {
-  const lat1 = points[0].latitude;
-  const radianLat1 = lat1 * (Math.PI / 180);
-  const lng1 = points[0].longitude;
-  const radianLng1 = lng1 * (Math.PI / 180);
-  const lat2 = points[1].latitude;
-  const radianLat2 = lat2 * (Math.PI / 180);
-  const lng2 = points[1].longitude;
-  const radianLng2 = lng2 * (Math.PI / 180);
-  const earthRadius = 6371; // or 6371 for kilometers
-  const diffLat = (radianLat1 - radianLat2);
-  const diffLng = (radianLng1 - radianLng2);
-  const sinLat = Math.sin(diffLat / 2);
-  const sinLng = Math.sin(diffLng / 2);
-  // eslint-disable-next-line max-len
-  const a = Math.pow(sinLat, 2.0) + Math.cos(radianLat1) * Math.cos(radianLat2) * Math.pow(sinLng, 2.0);
-  const distance = earthRadius * 2 * Math.asin(Math.min(1, Math.sqrt(a)));
-  return Number(distance.toFixed(3));
-}
-
 // eslint-disable-next-line max-len
-export const getQuery = async (filter: filterType, userPosition: userPositionType, area: areaType) => {
-  if (filter.rate) {
-    let findresult = await getConnection()
-      .query(`SELECT id,trackTitle,origin,destination,route,rate
+export const getQuery = async (filter: filterType, userPosition: userPositionType, area: areaType, userId) => {
+  // if (filter.rate) {
+  //   let tracks = await getConnection()
+  //     .query(`
+  //             SELECT rate_join.*,user_track.bookmark
+  //             FROM
+  //             (SELECT id,trackTitle,origin,destination,route,rate
+  //             FROM
+  //             (SELECT rate.trackId,AVG(rate.rateValue) AS rate
+  //             FROM rate
+  //             GROUP BY rate.trackId) test
+  //             RIGHT JOIN track ON track.id = test.trackId
+  //             WHERE trackLength < ${filter.maxLength}) rate_join
+  //             LEFT JOIN user_track ON rate_join.id = user_track.trackId
+  //             WHERE user_track.userId=1
+  //             ORDER BY rate DESC
+  //             `);
+  //   if (tracks.length !== 0) {
+  //     if (filter.distance > 0) {
+  //       tracks = filterDistance(tracks, filter.distance, userPosition);
+  //     }
+  //     tracks = filterArea(tracks, area);
+  //   }
+  //   const responseFormat = tracks.map((ele) => ({
+  //     trackTitle: ele.trackTitle,
+  //     origin: ele.origin,
+  //     destination: ele.destination,
+  //     route: ele.route,
+  //     trackLength: ele.trackLength,
+  //     rate: ele.rate,
+  //     bookmark: Boolean(ele.bookmark),
+  //   }));
+  //   return responseFormat;
+  // }
+  // let queryBuilder = await getConnection()
+  //   .getRepository(Track)
+  //   .createQueryBuilder('track')
+  //   .leftJoinAndSelect('track.userTracks', 'user_track', 'user_track.userId = :id', { id: 1 });
+  // if (filter.maxLength > 0) {
+  //   queryBuilder = queryBuilder.andWhere('track.trackLength < :maxLength', { maxLength: filter.maxLength });
+  // }
+  // if (filter.recent) {
+  //   queryBuilder = queryBuilder.orderBy('track.createdAt', 'DESC');
+  // }
+  // let tracks = await queryBuilder.getMany();
+  // if (tracks.length !== 0) {
+  //   if (filter.distance > 0) {
+  //     tracks = filterDistance(tracks, filter.distance, userPosition);
+  //   }
+  //   tracks = filterArea(tracks, area);
+  // }
+  // return tracks;
+  let queryString = `
+              SELECT rate_join.*,ut.bookmark
+              FROM
+              (SELECT id,trackTitle,origin,destination,trackLength,route,rate
               FROM
               (SELECT rate.trackId,AVG(rate.rateValue) AS rate
               FROM rate
-              GROUP BY rate.trackId) test
-              RIGHT JOIN track ON track.id = test.trackId
-              WHERE trackLength < ${filter.maxLength}
-              ORDER BY rate DESC
-              `);
-    if (findresult.length !== 0) {
-      if (filter.distance > 0) {
-        findresult = findresult.filter((ele) => {
-          const origin = JSON.parse(ele.origin);
-          return filter.distance > distanceFrom([origin, userPosition]) * 1000;
-        });
-      }
-      findresult = findresult.filter((ele) => {
-        const origin = JSON.parse(ele.origin);
-        return (area.latitude > origin.latitude
-          && ((area.latitude + area.latitudeDelta) < origin.latitude))
-          && (area.longitude < origin.longitude
-            && ((area.longitude + area.longitudeDelta) > origin.longitude));
-      });
-    }
-    return findresult;
+              GROUP BY rate.trackId) rateGroup
+              RIGHT JOIN track ON track.id = rateGroup.trackId
+              ) rate_join
+              LEFT JOIN (
+              SELECT * 
+              FROM user_track WHERE userId = ${userId}) ut ON rate_join.id = ut.trackId
+              `;
+  if (filter.rate) {
+    queryString += 'ORDER BY rate DESC';
   }
-  let queryBuilder = await getConnection().getRepository(Track).createQueryBuilder('track');
-  if (filter.maxLength > 0) {
-    queryBuilder = queryBuilder.andWhere('track.trackLength < :maxLength', { maxLength: filter.maxLength });
-  }
-  if (filter.recent) {
-    queryBuilder = queryBuilder.orderBy('createdAt', 'DESC');
-  }
-  let tracks = await queryBuilder.getMany();
+
+  let tracks = await getConnection()
+    .query(queryString);
   if (tracks.length !== 0) {
-    if (filter.distance > 0) {
-      tracks = tracks.filter((ele) => {
-        const origin = JSON.parse(ele.origin);
-        return filter.distance > distanceFrom([origin, userPosition]) * 1000;
-      });
+    if (filter.maxLength > 0) {
+      tracks = filterLength(tracks, filter.maxLength);
     }
-    tracks = tracks.filter((ele) => {
-      const origin = JSON.parse(ele.origin);
-      return (area.latitude > origin.latitude
-        && ((area.latitude + area.latitudeDelta) < origin.latitude))
-        && (area.longitude < origin.longitude
-          && ((area.longitude + area.longitudeDelta) > origin.longitude));
-    });
+    if (filter.distance > 0) {
+      tracks = filterDistance(tracks, filter.distance, userPosition);
+    }
+    tracks = filterArea(tracks, area);
   }
-  return tracks;
+  const responseFormat = tracks.map((ele) => ({
+    trackTitle: ele.trackTitle,
+    origin: ele.origin,
+    destination: ele.destination,
+    route: ele.route,
+    trackLength: ele.trackLength,
+    rate: ele.rate,
+    bookmark: Boolean(ele.bookmark),
+  }));
+  return responseFormat;
 };

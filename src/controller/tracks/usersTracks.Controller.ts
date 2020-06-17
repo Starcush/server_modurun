@@ -5,15 +5,11 @@ import userUtil from '../../util/userUtil';
 
 export default {
   post: async (req, res: Response) => {
-    // const {
-    //   trackId, userId,
-    // } = req.body;
     const userInfo: any = userUtil.jwt.verify(req.session.userToken, (err, decoded) => {
       if (err) return false;
       return decoded.data;
     });
     const { userId } = userInfo;
-    console.log(`유저아이디  ${userId}`);
     const {
       trackId,
     } = req.body;
@@ -30,9 +26,6 @@ export default {
     }
   },
   delete: async (req, res: Response) => {
-    // const {
-    //   trackId, userId,
-    // } = req.body;
     const userInfo: any = userUtil.jwt.verify(req.session.userToken, (err, decoded) => {
       if (err) return false;
       return decoded.data;
@@ -49,9 +42,6 @@ export default {
     }
   },
   patch: async (req, res: Response) => {
-    // const {
-    //   trackId, userId,
-    // } = req.body;
     const userInfo: any = userUtil.jwt.verify(req.session.userToken, (err, decoded) => {
       if (err) return false;
       return decoded.data;
@@ -68,12 +58,6 @@ export default {
     }
   },
   get: async (req, res: Response) => {
-    /*
-    * 유저의 아이디를 원래는 토큰으로 받지만 url파라미터를 받아서 임의로 구현
-     */
-    // const {
-    //   userId,
-    // } = req.params;
     const userInfo: any = userUtil.jwt.verify(req.session.userToken, (err, decoded) => {
       if (err) return false;
       return decoded.data;
@@ -87,12 +71,6 @@ export default {
     }
   },
   postRate: async (req, res: Response) => {
-    /*
-    * 트랙의 아이디와 유저 아이디를 받아서 rate 테이블에 저장한다.
-     */
-    // const {
-    //   trackId, userId, rate,
-    // } = req.body;
     const userInfo: any = userUtil.jwt.verify(req.session.userToken, (err, decoded) => {
       if (err) return false;
       return decoded.data;

@@ -30,9 +30,9 @@ router.post('/tracks/rate', usersTracksController.postRate);
 /*
 * users/schedules
 */
-router.get('/schedules', usersSchedulesController.get);
-router.post('/schedules', usersSchedulesController.post);
-router.delete('/schedules', usersSchedulesController.delete);
+router.get('/schedules', index.verifyToken, usersSchedulesController.get);
+router.post('/schedules', index.verifyToken, usersSchedulesController.post);
+router.delete('/schedules', index.verifyToken, usersSchedulesController.delete);
 
 
 export default router;

@@ -63,6 +63,7 @@ export default {
       tracks = filterArea(tracks, area);
     }
     const responseFormat = tracks.map((ele) => ({
+      id: ele.id,
       trackTitle: ele.trackTitle,
       origin: ele.origin,
       destination: ele.destination,
@@ -76,13 +77,20 @@ export default {
   getTrackById: async (trackId: number, userId: number) => {
     const resultTrack = await getConnection()
       .query(`
-              SELECT track.*,ut.bookmark
-              FROM
-              (SELECT user_track.bookmark,user_track.trackId
+            SELECT track.*,ut.bookmark,rateGroup.rate
+            FROM
+            (
+              SELECT user_track.bookmark,user_track.trackId
               FROM user_track
-              WHERE user_track.userId = ${userId}) ut
-              RIGHT JOIN track ON track.id = ut.trackId
-              WHERE track.id = ${trackId}
+              WHERE user_track.userId = ${userId}
+            ) ut
+            RIGHT JOIN track ON track.id = ut.trackId
+            LEFT JOIN (
+                SELECT rate.trackId,AVG(rate.rateValue) AS rate
+                FROM rate
+                GROUP BY rate.trackId
+            ) rateGroup ON rateGroup.trackId = track.id
+            WHERE id = ${trackId}
               `);
     if (resultTrack.length) {
       return resultTrack;
@@ -134,7 +142,6 @@ export default {
     return null;
   },
   deleteUsersTrackById: async (userId: number, trackId: number) => {
-    console.log(`${trackId},${userId}`);
     const response = await getConnection()
       .createQueryBuilder()
       .delete()

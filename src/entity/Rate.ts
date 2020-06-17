@@ -16,7 +16,7 @@ class Rate {
   @Column({ nullable: false })
   rateValue: number;
 
-  @ManyToOne((type) => User, (user) => user.rate)
+  @ManyToOne((type) => User, (user) => user.rates)
   user: User;
 
   @ManyToOne((type) => Track, (track) => track.rates)

@@ -20,6 +20,18 @@ export default {
     }
   },
   get: async (req, res) => {
-    res.send(200);
+    const userInfo: any = userUtil.jwt.verify(req.session.userToken, (err, decoded) => {
+      if (err) return false;
+      return decoded.data;
+    });
+    const { userId } = userInfo;
+    const { filter, userposition, area } = req.params;
+
+    const schedules = await scheduleRepository.getAllSchedule(JSON.parse(filter), JSON.parse(userposition), JSON.parse(area), userId);
+    if (schedules.length > 0) {
+      res.status(200).json(schedules);
+    } else {
+      res.send(404);
+    }
   },
 };

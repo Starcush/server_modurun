@@ -1,19 +1,35 @@
 /* eslint-disable no-await-in-loop */
 import { getConnection, ConnectionOptionsReader } from 'typeorm';
+import * as cookieParser from 'cookie-parser';
 import Schedule from '../entity/Schedule';
 import UserSchedule from '../entity/UserSchedule';
 import userScheduleRepository from './userScheduleRepository';
 import trackRepository from './trackRepository';
-import { filterDistanceSch, filterLengthSch, filterAreaSch, filterDateSch } from '../util/distanceUtil';
-import * as cookieParser from 'cookie-parser';
+import {
+  filterDistanceSch, filterLengthSch, filterAreaSch, filterDateSch,
+} from '../util/distanceUtil';
 
 export default {
-  getScheduleUsers: async (schduleId) => {
+  getScheduleData: async (scheduleId) => {
+    const response = await getConnection()
+      .query(`SELECT s.title, t.trackLength, s.scheduleFrom, s.scheduleTo
+      FROM schedule s RIGHT JOIN track t ON s.trackId = t.id
+      WHERE s.id = ${scheduleId}`);
+    return response;
+  },
+  getScheduleUsers: async (scheduleId) => {
     const response = await getConnection()
       .query(`SELECT *
     FROM schedule s RIGHT JOIN user_Schedule u ON s.id = u.scheduleId
-    WHERE s.id = ${schduleId}
+    WHERE s.id = ${scheduleId}
     ORDER BY u.createdAt DESC;`);
+    return response;
+  },
+  getCreatedScheduleData: async (scheduleId) => {
+    const response = await getConnection()
+      .query(`SELECT t.trackTitle, t.origin, t.destination, t.route, t.trackLength, s.title, s.scheduleFrom, s.scheduleTo
+      FROM schedule s RIGHT JOIN track t ON s.trackId = t.id
+      WHERE s.id = ${scheduleId};`);
     return response;
   },
   insertSchedule: async (track, title, scheduleFrom, scheduleTo) => {
@@ -30,7 +46,7 @@ export default {
     return response.generatedMaps[0].id;
   },
   insertUserSchedule: async (user, schedule) => {
-    await getConnection()
+    const response = await getConnection()
       .createQueryBuilder()
       .insert()
       .into(UserSchedule)
@@ -40,6 +56,7 @@ export default {
         },
       ])
       .execute();
+    return response;
   },
   deleteSchedule: async (scheduleId) => {
     await getConnection()
@@ -55,8 +72,14 @@ export default {
     let result = [];
     for (let i = 0; i < allSchedules.length; i += 1) {
       const userjoined = await userScheduleRepository.isUserSchedule(userId, allSchedules[i].id);
+      const participants = await userScheduleRepository.getParticipantsSchedule(allSchedules[i].id);
       const track = await trackRepository.getTrackById(allSchedules[i].trackId, userId);
-      result.push({ ...allSchedules[i], userjoined, track: track[0] });
+      result.push({
+        ...allSchedules[i],
+        userjoined,
+        participants,
+        track: track[0],
+      });
     }
     if (result.length !== 0) {
       if (filter.maxLength > 0) {

@@ -25,6 +25,10 @@ function distanceFrom(points: points): number {
   return Number(distance.toFixed(3));
 }
 
+/*
+* 트랙 유틸
+*/
+
 export const filterDistance = (track: any[], distance, userPosition) => track.filter((ele) => {
   const origin = JSON.parse(ele.origin);
   return distance > distanceFrom([origin, userPosition]) * 1000;
@@ -41,6 +45,10 @@ export const filterArea = (track: any[], area) => track.filter((ele: { origin: s
 
 export const filterLength = (track: any[], length) => track.filter((ele) => ele.trackLength < length);
 
+
+/*
+* 스케줄 유틸
+*/
 
 export const filterDistanceSch = (schedule: any[], distance, userPosition) => schedule.filter((ele) => {
   const origin = JSON.parse(ele.track.origin);

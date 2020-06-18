@@ -8,13 +8,12 @@ import * as socketIO from 'socket.io';
 import * as cookieParser from 'cookie-parser';
 import * as config from '../ormconfig';
 import router from './routes/index';
-import userUtil from './util/userUtil';
 import index from './middleware/index';
 import messageRepository from './repository/messageRepository';
 
 
-const passport = require('passport');
-require('./passport')(passport);
+// const passport = require('passport');
+// require('./passport')(passport);
 
 class App {
   public app: express.Application;
@@ -57,8 +56,8 @@ class App {
         extended: false,
       }),
     );
-    this.app.use(passport.initialize());
-    this.app.use(passport.session());
+    // this.app.use(passport.initialize());
+    // this.app.use(passport.session());
     this.app.use(morgan('dev'));
     this.app.use('/', router);
   }

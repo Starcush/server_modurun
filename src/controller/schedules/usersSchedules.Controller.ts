@@ -13,10 +13,11 @@ export default {
         return decode.data;
       });
       scheduleRepository.insertUserSchedule(userInfo.userId, scheduleId);
-      const userSchedules = await userScheduleRepository.getUserSchedules(userInfo.userId);
+      const scheduleData = await scheduleRepository.getScheduleData(scheduleId);
       const scheduleUsers = await scheduleRepository.getScheduleUsers(scheduleId);
-      if (userSchedules) {
-        res.status(200).send(scheduleUsers);
+      scheduleData[0].participants = scheduleUsers.length;
+      if (scheduleUsers) {
+        res.status(200).send(scheduleData);
       } else {
         res.status(404).send('Schedule not found');
       }
@@ -31,9 +32,13 @@ export default {
         return decode.data;
       });
       const userSchedules = await userScheduleRepository.getUserSchedules(userInfo.userId);
+
+      for (let i = 0; i < userSchedules.length; i += 1) {
+        const scheduleUsers = await scheduleRepository.getScheduleUsers(userSchedules[i].id);
+        userSchedules[i].participants = scheduleUsers.length;
+      }
       if (userSchedules) {
         res.status(200).send(userSchedules);
-        // 스케줄 유저 인원수 리턴 추가
       } else {
         res.status(404).send('Schedule not found');
       }

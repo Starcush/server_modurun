@@ -8,7 +8,6 @@ import * as socketIO from 'socket.io';
 import * as cookieParser from 'cookie-parser';
 import * as config from '../ormconfig';
 import router from './routes/index';
-import userUtil from './util/userUtil';
 import index from './middleware/index';
 import messageRepository from './repository/messageRepository';
 

@@ -3,12 +3,26 @@ import Schedule from '../entity/Schedule';
 import UserSchedule from '../entity/UserSchedule';
 
 export default {
-  getScheduleUsers: async (schduleId) => {
+  getScheduleData: async (scheduleId) => {
+    const response = await getConnection()
+      .query(`SELECT s.title, t.trackLength, s.scheduleFrom, s.scheduleTo
+      FROM schedule s RIGHT JOIN track t ON s.trackId = t.id
+      WHERE s.id = ${scheduleId}`);
+    return response;
+  },
+  getScheduleUsers: async (scheduleId) => {
     const response = await getConnection()
       .query(`SELECT *
     FROM schedule s RIGHT JOIN user_Schedule u ON s.id = u.scheduleId
-    WHERE s.id = ${schduleId}
+    WHERE s.id = ${scheduleId}
     ORDER BY u.createdAt DESC;`);
+    return response;
+  },
+  getParticipateScheduleData: async (scheduleId) => {
+    const response = await getConnection()
+      .query(`SELECT t.trackTitle, t.origin, t.destination, t.route, t.trackLength, s.title, s.scheduleFrom, s.scheduleTo
+      FROM schedule s RIGHT JOIN track t ON s.trackId = t.id
+      WHERE s.id = ${scheduleId};`);
     return response;
   },
   insertSchedule: async (track, title, scheduleFrom, scheduleTo) => {
@@ -25,7 +39,7 @@ export default {
     return response.generatedMaps[0].id;
   },
   insertUserSchedule: async (user, schedule) => {
-    await getConnection()
+    const response = await getConnection()
       .createQueryBuilder()
       .insert()
       .into(UserSchedule)
@@ -35,6 +49,7 @@ export default {
         },
       ])
       .execute();
+    return response;
   },
   deleteSchedule: async (scheduleId) => {
     await getConnection()

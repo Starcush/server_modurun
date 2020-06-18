@@ -18,7 +18,7 @@ export default {
     ORDER BY u.createdAt DESC;`);
     return response;
   },
-  getParticipateScheduleData: async (scheduleId) => {
+  getCreatedScheduleData: async (scheduleId) => {
     const response = await getConnection()
       .query(`SELECT t.trackTitle, t.origin, t.destination, t.route, t.trackLength, s.title, s.scheduleFrom, s.scheduleTo
       FROM schedule s RIGHT JOIN track t ON s.trackId = t.id

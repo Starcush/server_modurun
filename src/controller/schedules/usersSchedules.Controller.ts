@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 // eslint-disable-next-line no-unused-vars
 // import { Request, Response } from 'express';
 import userUtil from '../../util/userUtil';

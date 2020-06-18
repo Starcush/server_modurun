@@ -25,50 +25,48 @@ function distanceFrom(points: points): number {
   return Number(distance.toFixed(3));
 }
 
-/*
-* 트랙 유틸
-*/
+export default {
+  /*
+  * 트렉 유틸
+  */
+  filterDistance: (track: any[], distance, userPosition) => track.filter((ele) => {
+    const origin = JSON.parse(ele.origin);
+    return distance > distanceFrom([origin, userPosition]) * 1000;
+  }),
 
-export const filterDistance = (track: any[], distance, userPosition) => track.filter((ele) => {
-  const origin = JSON.parse(ele.origin);
-  return distance > distanceFrom([origin, userPosition]) * 1000;
-});
+  filterArea: (track: any[], area) => track.filter((ele: { origin: string; }) => {
+    const origin = JSON.parse(ele.origin);
+    return (area.latitude > origin.latitude
+      && ((area.latitude + area.latitudeDelta) < origin.latitude))
+      && (area.longitude < origin.longitude
+        && ((area.longitude + area.longitudeDelta) > origin.longitude));
+  }),
 
-export const filterArea = (track: any[], area) => track.filter((ele: { origin: string; }) => {
-  const origin = JSON.parse(ele.origin);
-  return (area.latitude > origin.latitude
-    && ((area.latitude + area.latitudeDelta) < origin.latitude))
-    && (area.longitude < origin.longitude
-      && ((area.longitude + area.longitudeDelta) > origin.longitude));
-});
+  filterLength: (track: any[], length) => track.filter((ele) => ele.trackLength < length),
 
+  /*
+  * 스케줄 유틸
+  */
+  filterDistanceSch: (schedule: any[], distance, userPosition) => schedule.filter((ele) => {
+    const origin = JSON.parse(ele.track.origin);
+    return distance > distanceFrom([origin, userPosition]) * 1000;
+  }),
 
-export const filterLength = (track: any[], length) => track.filter((ele) => ele.trackLength < length);
+  filterLengthSch: (schedule: any[], length) => schedule.filter((ele) => ele.track.trackLength < length),
 
+  filterAreaSch: (schedule: any[], area) => schedule.filter((ele) => {
+    const origin = JSON.parse(ele.track.origin);
+    return (area.latitude > origin.latitude
+      && ((area.latitude + area.latitudeDelta) < origin.latitude))
+      && (area.longitude < origin.longitude
+        && ((area.longitude + area.longitudeDelta) > origin.longitude));
+  }),
 
-/*
-* 스케줄 유틸
-*/
-
-export const filterDistanceSch = (schedule: any[], distance, userPosition) => schedule.filter((ele) => {
-  const origin = JSON.parse(ele.track.origin);
-  return distance > distanceFrom([origin, userPosition]) * 1000;
-});
-
-export const filterLengthSch = (schedule: any[], length) => schedule.filter((ele) => ele.track.trackLength < length);
-
-export const filterAreaSch = (schedule: any[], area) => schedule.filter((ele) => {
-  const origin = JSON.parse(ele.track.origin);
-  return (area.latitude > origin.latitude
-    && ((area.latitude + area.latitudeDelta) < origin.latitude))
-    && (area.longitude < origin.longitude
-      && ((area.longitude + area.longitudeDelta) > origin.longitude));
-});
-
-export const filterDateSch = (schedule: any[], date) => schedule.filter((ele) => {
-  const eleFrom = new Date(ele.scheduleFrom);
-  const eleTo = new Date(ele.scheduleTo);
-  const filterFrom = new Date(date.from);
-  const filterTo = new Date(date.to);
-  return (filterFrom <= eleFrom) && (eleTo <= filterTo);
-});
+  filterDateSch: (schedule: any[], date) => schedule.filter((ele) => {
+    const eleFrom = new Date(ele.scheduleFrom);
+    const eleTo = new Date(ele.scheduleTo);
+    const filterFrom = new Date(date.from);
+    const filterTo = new Date(date.to);
+    return (filterFrom <= eleFrom) && (eleTo <= filterTo);
+  }),
+};

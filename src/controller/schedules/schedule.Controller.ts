@@ -14,7 +14,7 @@ export default {
     try {
       const scheduleId = await scheduleRepository.insertSchedule(trackId, scheduleTitle, from, to);
       scheduleRepository.insertUserSchedule(userInfo.userId, scheduleId);
-      const scheduleData = await scheduleRepository.getParticipateScheduleData(scheduleId);
+      const scheduleData = await scheduleRepository.getCreatedScheduleData(scheduleId);
       res.status(200).send(scheduleData);
     } catch (err) {
       res.status(400).send();

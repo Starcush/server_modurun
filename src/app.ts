@@ -12,8 +12,8 @@ import index from './middleware/index';
 import messageRepository from './repository/messageRepository';
 
 
-const passport = require('passport');
-require('./passport')(passport);
+// const passport = require('passport');
+// require('./passport')(passport);
 
 class App {
   public app: express.Application;
@@ -56,8 +56,8 @@ class App {
         extended: false,
       }),
     );
-    this.app.use(passport.initialize());
-    this.app.use(passport.session());
+    // this.app.use(passport.initialize());
+    // this.app.use(passport.session());
     this.app.use(morgan('dev'));
     this.app.use('/', router);
   }

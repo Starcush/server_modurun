@@ -19,4 +19,18 @@ export default {
       .execute();
     return response;
   },
+  isUserSchedule: async (userId, scheduleId) => {
+    const response = await getConnection()
+      .query(`SELECT *
+    FROM user_Schedule
+    WHERE userId = ${userId} AND scheduleId = ${scheduleId}`);
+    return response.length !== 0;
+  },
+  getParticipantsSchedule: async (scheduleId) => {
+    const response = await getConnection()
+      .query(`SELECT *
+    FROM user_schedule
+    WHERE  scheduleId = ${scheduleId}`);
+    return response.length;
+  },
 };

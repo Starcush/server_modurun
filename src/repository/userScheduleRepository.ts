@@ -4,8 +4,8 @@ import UserSchedule from '../entity/UserSchedule';
 export default {
   getUserSchedules: async (userId) => {
     const response = await getConnection()
-      .query(`SELECT *
-    FROM schedule s LEFT JOIN user_Schedule u ON s.id = u.scheduleId
+      .query(`SELECT s.id, s.title, t.trackTitle, s.scheduleFrom, s.scheduleTo, s.trackId
+    FROM schedule s LEFT JOIN user_Schedule u ON s.id = u.scheduleId RIGHT JOIN track t ON s.trackId = t.id
     WHERE u.userId = ${userId}
     ORDER BY u.createdAt DESC;`);
     return response;

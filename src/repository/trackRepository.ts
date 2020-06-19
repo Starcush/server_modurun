@@ -2,7 +2,7 @@ import { getConnection } from 'typeorm';
 import Track from '../entity/Track';
 import UserTrack from '../entity/UserTrack';
 import Rate from '../entity/Rate';
-import { filterLength, filterDistance, filterArea } from '../util/distanceUtil';
+import distanceUtil from '../util/distanceUtil';
 
 type gelocation = {
   latitude: number,
@@ -29,23 +29,14 @@ interface areaType {
 export default {
   getTracks: async (filter: filterType, userPosition: userPositionType, area: areaType, userId) => {
     let queryString = `
-              SELECT rate_join.*,ut.bookmark
-              FROM
+              SELECT track.*,user_track.bookmark,
               (
-                SELECT id,trackTitle,origin,destination,trackLength,route,rate
-                FROM
-                (
-                  SELECT rate.trackId,AVG(rate.rateValue) AS rate
-                  FROM rate
-                  GROUP BY rate.trackId
-                ) rateGroup
-                RIGHT JOIN track ON track.id = rateGroup.trackId
-              ) rate_join
-              LEFT JOIN 
-              (
-                SELECT * 
-                FROM user_track WHERE userId = ${userId}
-              ) ut ON rate_join.id = ut.trackId
+                SELECT AVG(rate.rateValue)
+                FROM rate
+                WHERE rate.trackId =track.id
+              )as rateValue
+              FROM track
+              LEFT JOIN user_track ON track.id = user_track.trackId AND user_track.userId = ${userId}
               `;
     if (filter.rate) {
       queryString += 'ORDER BY rate DESC';
@@ -55,42 +46,27 @@ export default {
       .query(queryString);
     if (tracks.length !== 0) {
       if (filter.maxLength > 0) {
-        tracks = filterLength(tracks, filter.maxLength);
+        tracks = distanceUtil.filterLength(tracks, filter.maxLength);
       }
       if (filter.distance > 0) {
-        tracks = filterDistance(tracks, filter.distance, userPosition);
+        tracks = distanceUtil.filterDistance(tracks, filter.distance, userPosition);
       }
-      tracks = filterArea(tracks, area);
+      tracks = distanceUtil.filterArea(tracks, area);
     }
-    const responseFormat = tracks.map((ele) => ({
-      id: ele.id,
-      trackTitle: ele.trackTitle,
-      origin: ele.origin,
-      destination: ele.destination,
-      route: ele.route,
-      trackLength: ele.trackLength,
-      rate: ele.rate,
-      bookmark: Boolean(ele.bookmark),
-    }));
-    return responseFormat;
+    return tracks;
   },
   getTrackById: async (trackId: number, userId: number) => {
     const resultTrack = await getConnection()
       .query(`
-            SELECT track.*,ut.bookmark,rateGroup.rate
-            FROM
-            (
-              SELECT user_track.bookmark,user_track.trackId
-              FROM user_track
-              WHERE user_track.userId = ${userId}
-            ) ut
-            RIGHT JOIN track ON track.id = ut.trackId
-            LEFT JOIN (
-                SELECT rate.trackId,AVG(rate.rateValue) AS rate
+              SELECT track.*,user_track.bookmark,
+              (
+                SELECT AVG(rate.rateValue)
                 FROM rate
-                GROUP BY rate.trackId
-            ) rateGroup ON rateGroup.trackId = track.id
-            WHERE id = ${trackId}
+                WHERE rate.trackId =track.id
+              )as rateValue
+              FROM track
+              LEFT JOIN user_track ON track.id = user_track.trackId AND user_track.userId = ${userId}
+              WHERE track.id = ${trackId}
               `);
     if (resultTrack.length) {
       return resultTrack;
@@ -128,16 +104,7 @@ export default {
               LEFT JOIN rate ON rate.trackId = a_ut.trackId AND rate.userId = a_ut.userId
               `);
     if (findresult.length) {
-      const responseFormat = findresult.map((ele: any) => ({
-        trackTitle: ele.trackTitle,
-        origin: ele.origin,
-        destination: ele.destination,
-        route: ele.route,
-        trackLength: ele.trackLength,
-        rate: ele.rateValue,
-        bookmark: Boolean(ele.bookmark),
-      }));
-      return responseFormat;
+      return findresult;
     }
     return null;
   },

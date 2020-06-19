@@ -1,13 +1,10 @@
 /* eslint-disable no-await-in-loop */
-import { getConnection, ConnectionOptionsReader } from 'typeorm';
-import * as cookieParser from 'cookie-parser';
+import { getConnection } from 'typeorm';
 import Schedule from '../entity/Schedule';
 import UserSchedule from '../entity/UserSchedule';
 import userScheduleRepository from './userScheduleRepository';
 import trackRepository from './trackRepository';
-import {
-  filterDistanceSch, filterLengthSch, filterAreaSch, filterDateSch,
-} from '../util/distanceUtil';
+import distanceUtil from '../util/distanceUtil';
 
 export default {
   getScheduleData: async (scheduleId) => {
@@ -83,16 +80,16 @@ export default {
     }
     if (result.length !== 0) {
       if (filter.maxLength > 0) {
-        result = filterLengthSch(result, filter.maxLength);
+        result = distanceUtil.filterLengthSch(result, filter.maxLength);
       }
       if (filter.distance > 0) {
-        result = filterDistanceSch(result, filter.distance, userposition);
+        result = distanceUtil.filterDistanceSch(result, filter.distance, userposition);
       }
       if (filter.rate) {
         result.sort((a, b) => Number(b.track.rate) - Number(a.track.rate));
       }
-      result = filterAreaSch(result, area);
-      result = filterDateSch(result, filter.date);
+      result = distanceUtil.filterAreaSch(result, area);
+      result = distanceUtil.filterDateSch(result, filter.date);
     }
     return result;
   },

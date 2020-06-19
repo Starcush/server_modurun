@@ -59,7 +59,7 @@ class App {
     // this.app.use(passport.initialize());
     // this.app.use(passport.session());
     this.app.use(morgan('dev'));
-    this.app.use('/', router);
+    this.app.use('/', index.verifyToken, router);
   }
 
   close() {

@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import userUtil from '../../util/userUtil';
 import trackRepository from '../../repository/trackRepository';
+import '../../env';
 
 export default {
   get: async (req, res: Response) => {
@@ -11,12 +12,15 @@ export default {
     });
     const { userId } = userInfo;
     const { filter, userposition, area } = req.params;
-
-    const tracks = await trackRepository.getTracks(JSON.parse(filter), JSON.parse(userposition), JSON.parse(area), userId);
-    if (tracks.length > 0) {
-      res.status(200).json(tracks);
-    } else {
-      res.send(404);
+    try {
+      const tracks = await trackRepository.getTracks(JSON.parse(filter), JSON.parse(userposition), JSON.parse(area), userId || process.env.USER_ID);
+      if (tracks.length > 0) {
+        res.status(200).json(tracks);
+      } else {
+        res.send(404);
+      }
+    } catch (error) {
+      res.send(500);
     }
   },
 };

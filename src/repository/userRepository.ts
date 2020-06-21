@@ -46,4 +46,13 @@ export default {
       .where('email = :email', { email })
       .execute();
   },
+  updateUserPassword: async (email, password) => {
+    const response = await getConnection()
+      .createQueryBuilder()
+      .update(User)
+      .set({ password })
+      .where('email = :email', { email })
+      .execute();
+    return response;
+  },
 };

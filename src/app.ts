@@ -7,9 +7,9 @@ import * as session from 'express-session';
 import * as socketIO from 'socket.io';
 import * as cookieParser from 'cookie-parser';
 import * as config from '../ormconfig';
+import index from './middleware/index';
 import router from './routes/index';
 import messageRepository from './repository/messageRepository';
-
 // const passport = require('passport');
 // require('./passport')(passport);
 

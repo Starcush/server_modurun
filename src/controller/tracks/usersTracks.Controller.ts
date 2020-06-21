@@ -1,7 +1,9 @@
+/* eslint-disable max-len */
 // eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express';
 import trackRepository from '../../repository/trackRepository';
 import userUtil from '../../util/userUtil';
+import '../../env';
 
 export default {
   post: async (req, res: Response) => {
@@ -13,16 +15,20 @@ export default {
     const {
       trackId,
     } = req.body;
-    const userTrack = await trackRepository.findUserTracks(userId, trackId);
-    if (!userTrack.length) {
-      const result = await trackRepository.insertUsersTrackToDB(userId, trackId);
-      if (result.identifiers.length > 0) {
-        res.send(200);
+    try {
+      const userTrack = await trackRepository.findUserTracks(userId || process.env.USER_ID, trackId);
+      if (!userTrack.length) {
+        const result = await trackRepository.insertUsersTrackToDB(userId || process.env.USER_ID, trackId);
+        if (result.identifiers.length > 0) {
+          res.send(200);
+        } else {
+          res.send(404);
+        }
       } else {
-        res.send(404);
+        res.send(409);
       }
-    } else {
-      res.send(409);
+    } catch (error) {
+      res.send(500);
     }
   },
   delete: async (req, res: Response) => {
@@ -34,11 +40,15 @@ export default {
     const {
       trackId,
     } = req.body;
-    const result = await trackRepository.deleteUsersTrackById(userId, trackId);
-    if (result.affected > 0) {
-      res.send(200);
-    } else {
-      res.send(404);
+    try {
+      const result = await trackRepository.deleteUsersTrackById(userId || process.env.USER_ID, trackId);
+      if (result.affected > 0) {
+        res.send(200);
+      } else {
+        res.send(404);
+      }
+    } catch (error) {
+      res.send(500);
     }
   },
   patch: async (req, res: Response) => {
@@ -50,11 +60,15 @@ export default {
     const {
       trackId,
     } = req.body;
-    const result = await trackRepository.patchUsersTrackById(userId, trackId);
-    if (result.affected > 0) {
-      res.send(200);
-    } else {
-      res.send(400);
+    try {
+      const result = await trackRepository.patchUsersTrackById(userId || process.env.USER_ID, trackId);
+      if (result.affected > 0) {
+        res.send(200);
+      } else {
+        res.send(400);
+      }
+    } catch (error) {
+      res.send(500);
     }
   },
   get: async (req, res: Response) => {
@@ -63,11 +77,15 @@ export default {
       return decoded.data;
     });
     const { userId } = userInfo;
-    const result = await trackRepository.getUsersTrackById(Number(userId));
-    if (result) {
-      res.status(200).json(result);
-    } else {
-      res.send(404);
+    try {
+      const result = await trackRepository.getUsersTrackById(Number(userId || process.env.USER_ID));
+      if (result) {
+        res.status(200).json(result);
+      } else {
+        res.send(404);
+      }
+    } catch (error) {
+      res.send(500);
     }
   },
   postRate: async (req, res: Response) => {
@@ -79,16 +97,20 @@ export default {
     const {
       trackId, rate,
     } = req.body;
-    const rateTrack = await trackRepository.findRateTracks(userId, trackId);
-    if (!rateTrack.length) {
-      const result = await trackRepository.insertRateToDB(userId, trackId, Number(rate));
-      if (result.identifiers.length > 0) {
-        res.send(200);
+    try {
+      const rateTrack = await trackRepository.findRateTracks(userId || process.env.USER_ID, trackId);
+      if (!rateTrack.length) {
+        const result = await trackRepository.insertRateToDB(userId || process.env.USER_ID, trackId, Number(rate));
+        if (result.identifiers.length > 0) {
+          res.send(200);
+        } else {
+          res.send(404);
+        }
       } else {
-        res.send(404);
+        res.send(409);
       }
-    } else {
-      res.send(409);
+    } catch (error) {
+      res.send(500);
     }
   },
 };

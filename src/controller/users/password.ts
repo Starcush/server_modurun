@@ -1,6 +1,7 @@
-import { nodemailer } from 'nodemailer';
 import userRepository from '../../repository/userRepository';
 import userUtil from '../../util/userUtil';
+
+const nodemailer = require('nodemailer');
 
 export default {
   get: (req, res) => {
@@ -13,16 +14,20 @@ export default {
 
         for (let i = 0; i < 8; i += 1) tempPassword += possible.charAt(Math.floor(Math.random() * possible.length));
 
-        const transporter = nodemailer.createTransport({    //error
+        const transporter = nodemailer.createTransport({ // error
           service: 'gmail',
+          prot: 587,
+          host: 'smtp.gmlail.com',
+          secure: false,
+          requireTLS: true,
           auth: {
-            user: 'modurunManager@gmail.com',
+            user: 'moduerunmanager@gmail.com',
             pass: 'test1234!',
           },
         });
 
         const mailOptions = {
-          from: 'modurunManager@gmail.com',
+          from: 'moduerunManager@gmail.com',
           to: email,
           subject: '모두런 임시 비밀번호 입니다',
           text: `모두런 임시 비밀번호 입니다 ${tempPassword}`,
@@ -45,14 +50,14 @@ export default {
     }
   },
   post: (req, res) => {
-    const { password } = req.body;
+    const { passwordToChange } = req.body;
     const email = userUtil.jwt.verify(req.session.userToken, (err, decoded) => {
       if (err) return false;
       return decoded.data.email;
     });
 
     try {
-      const response = userRepository.updateUserPassword(email, password);
+      const response = userRepository.updateUserPassword(email, passwordToChange);
       if (response) {
         res.status(200).send('Password changed');
       } else {

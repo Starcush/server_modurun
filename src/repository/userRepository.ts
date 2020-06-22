@@ -55,4 +55,12 @@ export default {
       .execute();
     return response;
   },
+  deleteUser: async (email) => {
+    await getConnection()
+      .createQueryBuilder()
+      .delete()
+      .from(User)
+      .where('email = :email', { email })
+      .execute();
+  },
 };

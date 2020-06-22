@@ -2,8 +2,8 @@ import messageRepository from '../../repository/messageRepository';
 
 export default {
   get: async (req, res) => {
-    const { page, scheduleId } = req.query;
-    const messages = await messageRepository.getScheduleMessages(scheduleId, page);
+    const { start, scheduleId } = req.query;
+    const messages = await messageRepository.getScheduleMessages(scheduleId, start);
 
     if (!messages) {
       res.status(404).send('Not found messages');

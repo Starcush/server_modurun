@@ -1,4 +1,12 @@
-require('dotenv').config();
+const path = require('path');
+
+const {
+  NODE_ENV,
+} = process.env;
+
+require('dotenv').config({
+  path: path.resolve(process.cwd(), NODE_ENV === 'development' ? '.env.dev' : '.env'),
+});
 
 module.exports = {
   type: 'mysql',

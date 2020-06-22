@@ -1,5 +1,6 @@
 import scheduleRepository from '../../repository/scheduleRepository';
 import userUtil from '../../util/userUtil';
+import '../../env';
 
 export default {
   post: async (req, res) => { // 스케줄 생성하기
@@ -28,11 +29,15 @@ export default {
     const { userId } = userInfo;
     const { filter, userposition, area } = req.params;
 
-    const schedules = await scheduleRepository.getAllSchedule(JSON.parse(filter), JSON.parse(userposition), JSON.parse(area), userId);
-    if (schedules.length > 0) {
-      res.status(200).json(schedules);
-    } else {
-      res.send(404);
+    try {
+      const schedules = await scheduleRepository.getAllSchedule(JSON.parse(filter), JSON.parse(userposition), JSON.parse(area), userId || process.env.USER_ID);
+      if (schedules.length > 0) {
+        res.status(200).json(schedules);
+      } else {
+        res.send(404);
+      }
+    } catch (error) {
+      res.send(500);
     }
   },
 };

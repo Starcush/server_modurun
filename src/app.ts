@@ -4,15 +4,12 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as morgan from 'morgan';
 import * as session from 'express-session';
-// import * as socketIO from 'socket.io';
-import * as websocket from 'ws';
+import * as socketIO from 'socket.io';
 import * as cookieParser from 'cookie-parser';
 import * as config from '../ormconfig';
-import router from './routes/index';
 import index from './middleware/index';
+import router from './routes/index';
 import messageRepository from './repository/messageRepository';
-
-
 // const passport = require('passport');
 // require('./passport')(passport);
 
@@ -23,7 +20,7 @@ class App {
 
   public server: any;
 
-  // public io: socketIO.Server;
+  public io: socketIO.Server;
 
   public ws: any;
 
@@ -42,10 +39,12 @@ class App {
       })
       .catch((error) => console.log(error));
     this.app.use(cookieParser());
-    this.app.use(cors({
-      origin: true,
-      credentials: true,
-    }));
+    this.app.use(
+      cors({
+        origin: true,
+        credentials: true,
+      }),
+    );
     this.app.use(bodyParser.json());
     this.app.use(
       session({
@@ -60,7 +59,7 @@ class App {
       }),
     );
     this.app.use(morgan('dev'));
-    this.app.use('/', router);
+    this.app.use('/', index.verifyToken, router);
   }
 
   close() {
@@ -72,74 +71,46 @@ class App {
       console.log(`App listening on the port ${this.port}`);
     });
 
-    const wss = new websocket.Server({ server: this.server });
+    /*
+     * 소캣 연결되서 socket io 로 수정
+     */
+    this.io = socketIO(this.server, {
+      requestCert: true,
+      secure: true,
+      rejectUnauthorized: false,
+      transports: ['websocket'],
+    });
+    this.io
+      .use((socket, next) => {
+        index.verifyToken(socket.req, socket.res, next);
+        next();
+      })
+      .on('connection', (socket) => {
+        socket.on('leaveRoom', (scheduleId, name) => {
+          socket.leave(scheduleId, () => {
+            console.log(`${name} leave a ${scheduleId}`);
+            this.io.to(scheduleId).emit('leaveRoom', scheduleId, name);
+          });
+        });
 
-    const room = {};
-    wss.on('connection', (ws, req) => {
-      console.dir(req);
-      ws.send('user connected');
-        if (room[req.body.scheduleId]) {
-          room[req.body.scheduleId].push(req.headers.origin);
-          // room[req.body.scheduleId].push(ws)
-        } else {
-          room[req.body.scheduleId] = [];
-          room[req.body.scheduleId].push(req.headers.origin);
-        }
-        room[req.body.scheduleId].foreach((el) => {
-          el.send('user join in Room: %s', req.body.scheduleId);
+        socket.on('joinRoom', (scheduleId, username) => {
+          socket.join(scheduleId, () => {
+            console.log(`${username} join a ${scheduleId}`);
+            this.io.to(scheduleId).emit('joinRoom', scheduleId, username);
+          });
+        });
+
+        socket.on('chat message', (scheduleId, userId, username, message) => {
+          messageRepository.insertUserChatting(scheduleId, userId, message);
+          this.io
+            .to(scheduleId)
+            .emit('chat message', scheduleId, userId, username, message);
+        });
+
+        socket.on('disconnect', () => {
+          console.log('user out');
         });
       });
-
-      ws.on('leaveRoom', (message) => {
-        console.log('Received: %s', message);
-      });
-
-      ws.on('message', (message) => {
-        console.log('Received: %s', message);
-      });
-    });
-
-    wss.onclose = () => {
-      console.log('unconnected');
-    };
-
-
-    // this.ws = ws(this.server);
-
-    // this.ws.on('connection', (wss, req) => {
-    //   console.log('connected');
-    // });
-    // this.io = socketIO(this.server);
-    // this.io.origins('*:*');
-    // this.io.use((socket, next) => {
-    //   console.dir(socket);
-    //   index.verifyToken(socket.req, socket.res, next);
-    // }).on('connection', (socket) => {
-    //   console.log('user connect');
-
-    //   socket.on('leaveRoom', (scheduleId, name) => {
-    //     socket.leave(scheduleId, () => {
-    //       console.log(`${name} leave a ${scheduleId}`);
-    //       // this.io.to(scheduleId).emit('leaveRoom', scheduleId, name);
-    //     });
-    //   });
-
-    //   socket.on('joinRoom', (scheduleId, username) => {
-    //     socket.join(scheduleId, () => {
-    //       console.log(`${username} join a ${scheduleId}`);
-    //       this.io.to(scheduleId).emit('joinRoom', scheduleId, username);
-    //     });
-    //   });
-
-    //   socket.on('chat message', (scheduleId, userId, username, message) => {
-    //     messageRepository.insertUserChatting(scheduleId, userId, message);
-    //     this.io.to(scheduleId).emit('chat message', scheduleId, userId, username, message);
-    //   });
-
-    //   socket.on('disconnect', () => {
-    //     console.log('user out');
-    //   });
-    // });
   }
 }
 

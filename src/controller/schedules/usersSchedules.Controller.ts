@@ -13,7 +13,7 @@ export default {
         if (err) return err;
         return decode.data;
       });
-      scheduleRepository.insertUserSchedule(userInfo.userId, scheduleId);
+      scheduleRepository.insertUserSchedule(userInfo.userId || process.env.USER_ID, scheduleId);
       const scheduleData = await scheduleRepository.getScheduleData(scheduleId);
       const scheduleUsers = await scheduleRepository.getScheduleUsers(scheduleId);
       scheduleData[0].participants = scheduleUsers.length;
@@ -32,7 +32,7 @@ export default {
         if (err) return err;
         return decode.data;
       });
-      const userSchedules = await userScheduleRepository.getUserSchedules(userInfo.userId);
+      const userSchedules = await userScheduleRepository.getUserSchedules(userInfo.userId || process.env.USER_ID);
 
       for (let i = 0; i < userSchedules.length; i += 1) {
         const scheduleUsers = await scheduleRepository.getScheduleUsers(userSchedules[i].id);
@@ -57,10 +57,10 @@ export default {
       const scheduleUsers = await scheduleRepository.getScheduleUsers(scheduleId);
       let response = null;
       if (scheduleUsers.length === 1) {
-        response = await userScheduleRepository.deleteUserSchedule(userInfo.userId);
+        response = await userScheduleRepository.deleteUserSchedule(userInfo.userId || process.env.USER_ID);
         scheduleRepository.deleteSchedule(scheduleId);
       } else {
-        response = await userScheduleRepository.deleteUserSchedule(userInfo.userId);
+        response = await userScheduleRepository.deleteUserSchedule(userInfo.userId || process.env.USER_ID);
       }
       if (response) {
         res.status(200).send();

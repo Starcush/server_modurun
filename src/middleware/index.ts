@@ -6,6 +6,7 @@ const exceptUrls = [
   '/users/signup',
   '/users/user/exist',
   '/users/signout',
+  '/users/password',
 ];
 
 export default {

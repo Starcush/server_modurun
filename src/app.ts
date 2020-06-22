@@ -22,6 +22,8 @@ class App {
 
   public io: socketIO.Server;
 
+  public ws: any;
+
   constructor(port) {
     if (!this.app) {
       this.app = express();
@@ -41,7 +43,7 @@ class App {
       cors({
         origin: true,
         credentials: true,
-      })
+      }),
     );
     this.app.use(bodyParser.json());
     this.app.use(
@@ -49,15 +51,13 @@ class App {
         secret: 'moduerun',
         resave: false,
         saveUninitialized: true,
-      })
+      }),
     );
     this.app.use(
       bodyParser.urlencoded({
         extended: false,
-      })
+      }),
     );
-    // this.app.use(passport.initialize());
-    // this.app.use(passport.session());
     this.app.use(morgan('dev'));
     this.app.use('/', index.verifyToken, router);
   }
@@ -82,7 +82,7 @@ class App {
     });
     this.io
       .use((socket, next) => {
-        // index.verifyToken(socket.req, socket.res, next);
+        index.verifyToken(socket.req, socket.res, next);
         next();
       })
       .on('connection', (socket) => {

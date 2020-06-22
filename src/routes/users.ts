@@ -2,6 +2,7 @@ import signup from '../controller/users/signup';
 import signin from '../controller/users/signin';
 import user from '../controller/users/user';
 import signout from '../controller/users/signout';
+import unsubscribe from '../controller/users/unsubscribe'; 
 
 import usersTracksController from '../controller/tracks/usersTracks.Controller';
 import usersSchedulesController from '../controller/schedules/usersSchedules.Controller';
@@ -17,6 +18,7 @@ router.post('/signup', signup.post);
 router.patch('/user/name', user.patch);
 router.get('/user/exist', user.get);
 router.get('/signout', signout.get);
+router.post('/unsubscribe', unsubscribe.post);
 
 /*
 * users/tracks

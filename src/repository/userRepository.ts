@@ -46,4 +46,12 @@ export default {
       .where('email = :email', { email })
       .execute();
   },
+  deleteUser: async (email) => {
+    await getConnection()
+      .createQueryBuilder()
+      .delete()
+      .from(User)
+      .where('email = :email', { email })
+      .execute();
+  },
 };

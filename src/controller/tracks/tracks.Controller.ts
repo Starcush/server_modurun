@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import userUtil from '../../util/userUtil';
 import trackRepository from '../../repository/trackRepository';
 import '../../env';
+import formatUtil from '../../util/formatUtil';
 
 export default {
   get: async (req, res: Response) => {
@@ -15,7 +16,7 @@ export default {
     try {
       const tracks = await trackRepository.getTracks(JSON.parse(filter), JSON.parse(userposition), JSON.parse(area), userId || process.env.USER_ID);
       if (tracks.length > 0) {
-        res.status(200).json(tracks);
+        res.status(200).json(formatUtil.changeToJson(tracks));
       } else {
         res.send(404);
       }

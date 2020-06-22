@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import trackRepository from '../../repository/trackRepository';
 import userUtil from '../../util/userUtil';
 import '../../env';
+import formatUtil from '../../util/formatUtil';
 
 export default {
   post: async (req, res: Response) => {
@@ -80,7 +81,7 @@ export default {
     try {
       const result = await trackRepository.getUsersTrackById(Number(userId || process.env.USER_ID));
       if (result) {
-        res.status(200).json(result);
+        res.status(200).json(formatUtil.changeToJson(result));
       } else {
         res.send(404);
       }

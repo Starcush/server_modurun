@@ -68,10 +68,7 @@ export default {
               LEFT JOIN user_track ON track.id = user_track.trackId AND user_track.userId = ${userId}
               WHERE track.id = ${trackId}
               `);
-    if (resultTrack.length) {
-      return resultTrack;
-    }
-    return [];
+    return resultTrack;
   },
   deleteTrackById: async (trackId: string) => {
     const response = await getConnection()

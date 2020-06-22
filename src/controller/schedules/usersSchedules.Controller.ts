@@ -4,6 +4,7 @@
 import userUtil from '../../util/userUtil';
 import userScheduleRepository from '../../repository/userScheduleRepository';
 import scheduleRepository from '../../repository/scheduleRepository';
+import formatUtil from '../../util/formatUtil';
 
 export default {
   post: async (req, res) => { // 다른 스케줄에 참여
@@ -18,7 +19,7 @@ export default {
       const scheduleUsers = await scheduleRepository.getScheduleUsers(scheduleId);
       scheduleData[0].participants = scheduleUsers.length;
       if (scheduleUsers) {
-        res.status(200).send(scheduleData);
+        res.status(200).send(formatUtil.changeToJson(scheduleData));
       } else {
         res.status(404).send('Schedule not found');
       }
@@ -39,7 +40,7 @@ export default {
         userSchedules[i].participants = scheduleUsers.length;
       }
       if (userSchedules) {
-        res.status(200).send(userSchedules);
+        res.status(200).send(formatUtil.changeToJson(userSchedules));
       } else {
         res.status(404).send('Schedule not found');
       }

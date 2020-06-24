@@ -9,7 +9,7 @@ import distanceUtil from '../util/distanceUtil';
 export default {
   getScheduleData: async (scheduleId) => {
     const response = await getConnection()
-      .query(`SELECT s.title, t.trackLength, s.scheduleFrom, s.scheduleTo
+      .query(`SELECT s.title, t.trackLength, s.scheduleFrom, s.scheduleTo,t.origin,t.destination,t.route
       FROM schedule s RIGHT JOIN track t ON s.trackId = t.id
       WHERE s.id = ${scheduleId}`);
     return response;

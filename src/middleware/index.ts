@@ -10,6 +10,17 @@ const exceptUrls = [
 ];
 
 export default {
+  socketMidleware: (socket, next) => {
+    const token = socket.handshake.session.userToken;
+    if (!token) {
+      console.log('this is error');
+      return next(new Error('authentication error'));
+    }
+    userUtil.jwt.verify(token, (err) => {
+      if (err) return next(new Error('authentication error'));
+    });
+    return next();
+  },
   verifyToken: (req, res, next) => {
     // exceptUrls에 포함되는 요청
     if (exceptUrls.includes(req.url)) {
@@ -31,8 +42,5 @@ export default {
         next();
       });
     }
-    // if (req) {
-    // }
-    // next();
   },
 };

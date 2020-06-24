@@ -19,7 +19,7 @@ router.post('/signup', signup.post);
 router.patch('/user/name', user.patch);
 router.get('/user/exist', user.get);
 router.get('/signout', signout.get);
-router.get('/findPassword', password.get);
+router.get('/password', password.get);
 router.post('/changePassword', password.post);
 router.post('/unsubscribe', unsubscribe.post);
 
@@ -39,6 +39,6 @@ router.post('/tracks/rate', usersTracksController.postRate);
 router.get('/schedules', usersSchedulesController.get);
 router.post('/schedules', usersSchedulesController.post);
 router.delete('/schedules', usersSchedulesController.delete);
-
+router.get('/schedules/completed', usersSchedulesController.getCompltedSchedule);
 
 export default router;

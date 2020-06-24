@@ -6,10 +6,14 @@ import * as morgan from 'morgan';
 import * as session from 'express-session';
 import * as socketIO from 'socket.io';
 import * as cookieParser from 'cookie-parser';
+import * as request from 'supertest';
+import { Request } from 'express';
+import * as sharedsession from 'express-socket.io-session';
 import * as config from '../ormconfig';
 import index from './middleware/index';
 import router from './routes/index';
 import messageRepository from './repository/messageRepository';
+
 // const passport = require('passport');
 // require('./passport')(passport);
 
@@ -23,6 +27,8 @@ class App {
   public io: socketIO.Server;
 
   public ws: any;
+
+  public session: any;
 
   constructor(port) {
     if (!this.app) {
@@ -45,14 +51,13 @@ class App {
         credentials: true,
       }),
     );
+    this.session = session({
+      secret: 'moduerun',
+      resave: false,
+      saveUninitialized: true,
+    });
     this.app.use(bodyParser.json());
-    this.app.use(
-      session({
-        secret: 'moduerun',
-        resave: false,
-        saveUninitialized: true,
-      }),
-    );
+    this.app.use(this.session);
     this.app.use(
       bodyParser.urlencoded({
         extended: false,
@@ -70,22 +75,20 @@ class App {
     this.server = this.app.listen(this.port, () => {
       console.log(`App listening on the port ${this.port}`);
     });
-
-    /*
-     * 소캣 연결되서 socket io 로 수정
-     */
     this.io = socketIO(this.server, {
       requestCert: true,
       secure: true,
       rejectUnauthorized: false,
       transports: ['websocket'],
     });
+    // session을 공유
+    this.io.use(sharedsession(this.session));
     this.io
       .use((socket, next) => {
-        index.verifyToken(socket.req, socket.res, next);
-        next();
+        index.socketMidleware(socket, next);
       })
       .on('connection', (socket) => {
+        console.log('user connected');
         socket.on('leaveRoom', (scheduleId, name) => {
           socket.leave(scheduleId, () => {
             console.log(`${name} leave a ${scheduleId}`);

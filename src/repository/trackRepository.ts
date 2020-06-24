@@ -88,12 +88,12 @@ export default {
       .execute();
     return response;
   },
-  getUsersTrackById: async (userId: number) => {
+  getUsersTrackById: async (userId: any) => {
     const findresult = await getConnection()
       .query(`SELECT a_ut.*,rate.rateValue
               FROM
               (
-                SELECT ut.*,track.origin,track.destination,track.trackTitle,track.route
+                SELECT ut.*,track.origin,track.destination,track.trackTitle,track.route,track.trackLength
                 FROM user_track as ut
                 LEFT JOIN track ON track.id = ut.trackId
                 WHERE (ut.userId = ${userId})

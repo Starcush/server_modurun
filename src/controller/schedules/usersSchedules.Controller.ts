@@ -96,11 +96,15 @@ export default {
           userCompletedSch[i].rateValue = 0;
         }
       }
+      const filteredRate = userCompletedSch.filter(ele=> !ele.rateValue);
 
-      const filteredRate = userCompletedSch.filter((ele)=>{ return !ele.rateValue });
+      const filteredDate = filteredRate.filter((ele)=>{
+        const AFTER_THREE_HOUR = new Date((new Date(ele.scheduleTo)).valueOf() + 1000 * 3600 * 3);
+        return AFTER_THREE_HOUR <= new Date();
+      });
 
-      if (filteredRate) {
-        res.status(200).send(formatUtil.changeToJson(filteredRate));
+      if (filteredDate) {
+        res.status(200).send(formatUtil.changeToJson(filteredDate));
       } else {
         res.status(404).send('Schedule not found');
       }

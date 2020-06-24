@@ -16,14 +16,19 @@ export default {
         if (err) return err;
         return decode.data;
       });
-      scheduleRepository.insertUserSchedule(userInfo.userId || process.env.USER_ID, scheduleId);
-      const scheduleData = await scheduleRepository.getScheduleData(scheduleId);
-      const scheduleUsers = await scheduleRepository.getScheduleUsers(scheduleId);
-      scheduleData[0].participants = scheduleUsers.length;
-      if (scheduleUsers) {
-        res.status(200).send(formatUtil.changeToJson(scheduleData));
+      const findUserSchedule = userScheduleRepository.isUserSchedule(userInfo.userId || process.env.USER_ID, scheduleId);
+      if (!findUserSchedule) {
+        scheduleRepository.insertUserSchedule(userInfo.userId || process.env.USER_ID, scheduleId);
+        const scheduleData = await scheduleRepository.getScheduleData(scheduleId);
+        const scheduleUsers = await scheduleRepository.getScheduleUsers(scheduleId);
+        scheduleData[0].participants = scheduleUsers.length;
+        if (scheduleUsers) {
+          res.status(200).send(formatUtil.changeToJson(scheduleData));
+        } else {
+          res.status(404).send('Schedule not found');
+        }
       } else {
-        res.status(404).send('Schedule not found');
+        res.status(409).send('already exist uses schedule');
       }
     } catch (err) {
       res.status(500).send(err);

@@ -5,6 +5,8 @@ import userUtil from '../../util/userUtil';
 import userScheduleRepository from '../../repository/userScheduleRepository';
 import scheduleRepository from '../../repository/scheduleRepository';
 import formatUtil from '../../util/formatUtil';
+import '../../env';
+import trackRepository from '../../repository/trackRepository';
 
 export default {
   post: async (req, res) => { // 다른 스케줄에 참여
@@ -69,6 +71,41 @@ export default {
         res.status(404).send('Schedule not found');
       }
     } catch (err) {
+      res.status(500).send(err);
+    }
+  },
+  getCompltedSchedule: async (req, res) => {
+    // 유저의 스케줄 목록 불러오기
+    // 현재 시간을 기준으로 3시간 지난 스케쥴을 가져오고
+    // rate가 null인 값을 보내준다
+
+    try {
+      const userInfo = userUtil.jwt.verify(req.session.userToken, (err, decode) => {
+        if (err) return err;
+        return decode.data;
+      });
+      const userId = userInfo.userId || process.env.USER_ID;
+      const userCompletedSch = await userScheduleRepository.getAllUsersSchedule(userId);
+      for (let i = 0; i < userCompletedSch.length; i += 1) {
+        const rate: any = await trackRepository.findRateTracks(userId, userCompletedSch[i].id);
+        userCompletedSch[i].trackId = userCompletedSch[i].id;
+        delete userCompletedSch[i].id;
+        if (rate[0]) {
+          userCompletedSch[i].rateValue = rate[0].rateValue;
+        } else {
+          userCompletedSch[i].rateValue = 0;
+        }
+      }
+
+      const filteredRate = userCompletedSch.filter((ele)=>{ return !ele.rateValue });
+
+      if (filteredRate) {
+        res.status(200).send(formatUtil.changeToJson(filteredRate));
+      } else {
+        res.status(404).send('Schedule not found');
+      }
+    } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   },

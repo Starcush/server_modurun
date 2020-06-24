@@ -41,6 +41,7 @@ export default {
             console.log(`Email sent: ${info.response}`);
           }
         });
+        res.status(200).send('Sent email temporary password');
       } else {
         res.status(404).send('User not found');
       }

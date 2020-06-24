@@ -36,8 +36,8 @@ export default {
 
   filterArea: (track: any[], area) => track.filter((ele: { origin: string; }) => {
     const origin = JSON.parse(ele.origin);
-    return (area.latitude > origin.latitude
-      && ((area.latitude + area.latitudeDelta) < origin.latitude))
+    return (area.latitude < origin.latitude
+      && ((area.latitude + area.latitudeDelta) > origin.latitude))
       && (area.longitude < origin.longitude
         && ((area.longitude + area.longitudeDelta) > origin.longitude));
   }),
@@ -56,8 +56,8 @@ export default {
 
   filterAreaSch: (schedule: any[], area) => schedule.filter((ele) => {
     const origin = JSON.parse(ele.track.origin);
-    return (area.latitude > origin.latitude
-      && ((area.latitude + area.latitudeDelta) < origin.latitude))
+    return (area.latitude < origin.latitude
+      && ((area.latitude + area.latitudeDelta) > origin.latitude))
       && (area.longitude < origin.longitude
         && ((area.longitude + area.longitudeDelta) > origin.longitude));
   }),

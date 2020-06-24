@@ -15,9 +15,9 @@ export default {
 
     try {
       const scheduleId = await scheduleRepository.insertSchedule(trackId, scheduleTitle, from, to);
-      scheduleRepository.insertUserSchedule(userInfo.userId, scheduleId);
+      scheduleRepository.insertUserSchedule(userInfo.userId || process.env.USER_ID, scheduleId);
       const scheduleData = await scheduleRepository.getCreatedScheduleData(scheduleId);
-      res.status(200).send(scheduleData);
+      res.status(200).send(formatUtil.changeToJson(scheduleData));
     } catch (err) {
       res.status(400).send();
     }

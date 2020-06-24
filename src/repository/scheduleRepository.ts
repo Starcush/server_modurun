@@ -17,7 +17,7 @@ export default {
   getScheduleUsers: async (scheduleId) => {
     const response = await getConnection()
       .query(`SELECT *
-    FROM schedule s RIGHT JOIN user_Schedule u ON s.id = u.scheduleId
+    FROM schedule s RIGHT JOIN user_schedule u ON s.id = u.scheduleId
     WHERE s.id = ${scheduleId}
     ORDER BY u.createdAt DESC;`);
     return response;

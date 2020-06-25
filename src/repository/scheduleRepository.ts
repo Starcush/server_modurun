@@ -90,6 +90,8 @@ export default {
       }
       result = distanceUtil.filterAreaSch(result, area);
       result = distanceUtil.filterDateSch(result, filter.date);
+      result = distanceUtil.filterTimeSch(result, filter.date);
+      console.log(result);
     }
     return result;
   },

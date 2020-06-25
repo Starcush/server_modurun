@@ -67,6 +67,28 @@ export default {
     const eleTo = new Date(ele.scheduleTo);
     const filterFrom = new Date(date.from);
     const filterTo = new Date(date.to);
+
     return (filterFrom <= eleFrom) && (eleTo <= filterTo);
+  }),
+  filterTimeSch: (schedule: any[], date) => schedule.filter((ele) => {
+    console.log(date);
+    const filterTimeFromHour = new Date(date.timeFrom).getHours();
+    const filterTimeFromMinutes = new Date(date.timeFrom).getMinutes();
+
+    const filterTimeToHour = new Date(date.timeTo).getHours();
+    const filterTimeToMinutes = new Date(date.timeTo).getMinutes();
+
+    const eleTimeFromHour = new Date(ele.scheduleFrom).getHours();
+    const eleTimeFromMinutes = new Date(ele.scheduleFrom).getMinutes();
+
+    const eleTimeToHour = new Date(ele.scheduleTo).getHours();
+    const eleTimeToMinutes = new Date(ele.scheduleTo).getMinutes();
+    const filterTimeFromMin = filterTimeFromHour * 60 + filterTimeFromMinutes;
+    const filterTimeToMin = filterTimeToHour * 60 + filterTimeToMinutes;
+
+    const eleTimeFromMin = eleTimeFromHour * 60 + eleTimeFromMinutes;
+    const eleTimeToMin = eleTimeToHour * 60 + eleTimeToMinutes;
+
+    return (filterTimeFromMin <= eleTimeFromMin) && (eleTimeToMin <= filterTimeToMin);
   }),
 };

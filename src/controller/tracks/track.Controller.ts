@@ -8,7 +8,7 @@ import '../../env';
 import formatUtil from '../../util/formatUtil';
 
 export default {
-  post: async (req: Request, res: Response) => {
+  post: async (req, res: Response) => {
     const {
       trackTitle, origin, destination, route, trackLength,
     } = req.body;
@@ -19,7 +19,14 @@ export default {
       newTrack.destination = JSON.stringify(destination);
       newTrack.route = JSON.stringify(route);
       newTrack.trackLength = trackLength;
-      await trackRepository.insertTrackToDB(newTrack);
+      const resultTrack = await trackRepository.insertTrackToDB(newTrack);
+
+      const userInfo: any = userUtil.jwt.verify(req.session.userToken, (err, decoded) => {
+        if (err) return false;
+        return decoded.data;
+      });
+      const { userId } = userInfo;
+      trackRepository.insertUsersTrackToDB(userId || process.env.USER_ID, resultTrack.identifiers[0].id);
       res.send(200);
     } catch (error) {
       res.send(500);

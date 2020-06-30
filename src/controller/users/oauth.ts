@@ -33,11 +33,14 @@ export default {
         const token = userUtil.jwt.sign(email);
         req.session.userToken = token;
         const resopnseJson = {
+          username: '',
           isFirstLogin: false,
         };
 
         if (loginCount === null) {
           resopnseJson.isFirstLogin = true;
+        } else {
+          resopnseJson.username = response.username;
         }
         res.status(200).send(resopnseJson);
       })

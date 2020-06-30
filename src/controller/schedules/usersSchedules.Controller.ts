@@ -16,7 +16,10 @@ export default {
         if (err) return err;
         return decode.data;
       });
-      const findUserSchedule = userScheduleRepository.isUserSchedule(userInfo.userId || process.env.USER_ID, scheduleId);
+      console.log(scheduleId);
+      console.log(userInfo.userId);
+      const findUserSchedule = await userScheduleRepository.isUserSchedule(userInfo.userId || process.env.USER_ID, scheduleId);
+      console.log(findUserSchedule);
       if (!findUserSchedule) {
         scheduleRepository.insertUserSchedule(userInfo.userId || process.env.USER_ID, scheduleId);
         const scheduleData = await scheduleRepository.getScheduleData(scheduleId);
@@ -65,10 +68,10 @@ export default {
       const scheduleUsers = await scheduleRepository.getScheduleUsers(scheduleId);
       let response = null;
       if (scheduleUsers.length === 1) {
-        response = await userScheduleRepository.deleteUserSchedule(userInfo.userId || process.env.USER_ID);
+        response = await userScheduleRepository.deleteUserSchedule(userInfo.userId || process.env.USER_ID, scheduleId);
         scheduleRepository.deleteSchedule(scheduleId);
       } else {
-        response = await userScheduleRepository.deleteUserSchedule(userInfo.userId || process.env.USER_ID);
+        response = await userScheduleRepository.deleteUserSchedule(userInfo.userId || process.env.USER_ID, scheduleId);
       }
       if (response) {
         res.status(200).send();
@@ -104,7 +107,7 @@ export default {
       const filteredRate = userCompletedSch.filter(ele=> !ele.rateValue);
 
       const filteredDate = filteredRate.filter((ele)=>{
-        const AFTER_THREE_HOUR = new Date((new Date(ele.scheduleTo)).valueOf() + 1000 * 3600 * 3);
+        const AFTER_THREE_HOUR = new Date((new Date(ele.scheduleTo)).valueOf());
         return AFTER_THREE_HOUR <= new Date();
       });
 

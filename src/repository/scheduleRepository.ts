@@ -67,6 +67,9 @@ export default {
     // 모든 스케줄의 정보를 가져온다
     const allSchedules = await getConnection().query('SELECT * FROM schedule ORDER BY createdAt DESC');
     let result = [];
+    console.log(area);
+    console.log(userposition);
+    console.log(filter);
     for (let i = 0; i < allSchedules.length; i += 1) {
       const userjoined = await userScheduleRepository.isUserSchedule(userId, allSchedules[i].id);
       const participants = await userScheduleRepository.getParticipantsSchedule(allSchedules[i].id);
@@ -77,21 +80,22 @@ export default {
         participants,
         track: track[0],
       });
+      
     }
     if (result.length !== 0) {
       if (filter.maxLength > 0) {
         result = distanceUtil.filterLengthSch(result, filter.maxLength);
+	
       }
       if (filter.distance > 0) {
         result = distanceUtil.filterDistanceSch(result, filter.distance, userposition);
-      }
+	}
       if (filter.rate) {
         result.sort((a, b) => Number(b.track.rate) - Number(a.track.rate));
       }
       result = distanceUtil.filterAreaSch(result, area);
       result = distanceUtil.filterDateSch(result, filter.date);
       result = distanceUtil.filterTimeSch(result, filter.date);
-      console.log(result);
     }
     return result;
   },

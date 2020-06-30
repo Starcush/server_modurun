@@ -5,11 +5,11 @@ export default {
         if (err) {
           res.status(500).send();
         } else {
-          res.redirect('/');
+          res.status(200).send('logout ok');
         }
       });
     } else {
-      res.redirect('/');
+      res.status(200).send('logout ok');
     }
   },
 };

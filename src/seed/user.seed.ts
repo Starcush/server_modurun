@@ -2,7 +2,7 @@
 export const UserSeed = [
   {
     email: '1571min@mail.com',
-    password: '1234',
+    password: '39a5f40ccb55541a69f765f40d350ab352e80c6178bce07880684bc5c6b2f98c01d2f98d82cb9730cb3516a10e9b51f169374e9e91d408f4381e38c6601036fb',
     username: 'lee',
     loginCount: 1,
     createdAt: `${new Date()}`,

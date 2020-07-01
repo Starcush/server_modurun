@@ -13,6 +13,7 @@ import * as config from '../ormconfig';
 import index from './middleware/index';
 import router from './routes/index';
 import messageRepository from './repository/messageRepository';
+import userUtil from './util/userUtil';
 
 // const passport = require('passport');
 // require('./passport')(passport);
@@ -89,10 +90,10 @@ class App {
       })
       .on('connection', (socket) => {
         console.log('user connected');
-        socket.on('leaveRoom', (scheduleId, name) => {
+        socket.on('leaveRoom', (scheduleId, username) => {
           socket.leave(scheduleId, () => {
-            console.log(`${name} leave a ${scheduleId}`);
-            this.io.to(scheduleId).emit('leaveRoom', scheduleId, name);
+            console.log(`${username} leave a ${scheduleId}`);
+            this.io.to(scheduleId).emit('leaveRoom', scheduleId, username);
           });
         });
 
@@ -103,11 +104,21 @@ class App {
           });
         });
 
-        socket.on('chat message', (scheduleId, userId, username, message) => {
-          messageRepository.insertUserChatting(scheduleId, userId, message);
+        // socket.on('chat message', (scheduleId, userId, username, message) => {
+          socket.on('chat message', (scheduleId, username, message) => {
+          const token = socket.handshake.session.userToken;
+          const userInfo = userUtil.jwt.verify(token, (err, decoded) => {
+            if (err) return false;
+            return decoded.data;
+          });
+          console.dir(token);
+          console.log(message);
+
+          messageRepository.insertUserChatting(scheduleId, userInfo.userId, message);
           this.io
             .to(scheduleId)
-            .emit('chat message', scheduleId, userId, username, message);
+            .emit('chat message', scheduleId, username, message);
+            // .emit('chat message', scheduleId, userInfo.userId, username, message);
         });
 
         socket.on('disconnect', () => {

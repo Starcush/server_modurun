@@ -25,4 +25,28 @@ export const ScheduleSeed = [
     createdAt: new Date(),
     updatedAt: new Date(),
   },
+  {
+    title: '모레 공원 네바퀴',
+    scheduleFrom: new Date((new Date()).valueOf() + 1000 * 3600 * 49),
+    scheduleTo: new Date((new Date()).valueOf() + 1000 * 3600 * 50),
+    track: 4,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    title: '모레 공원 5바퀴',
+    scheduleFrom: new Date((new Date()).valueOf() + 1000 * 3600 * 49),
+    scheduleTo: new Date((new Date()).valueOf() + 1000 * 3600 * 50),
+    track: 5,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    title: '모레 공원 6바퀴',
+    scheduleFrom: new Date((new Date()).valueOf() + 1000 * 3600 * 49),
+    scheduleTo: new Date((new Date()).valueOf() + 1000 * 3600 * 50),
+    track: 6,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
 ];

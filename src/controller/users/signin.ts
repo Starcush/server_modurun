@@ -31,7 +31,9 @@ export default {
         // console.log(token);
         req.session.userToken = token;
         res.status(200).send(responseJson);
-      }
+	}else{
+	  res.status(404).send('invaild password');
+	}
     } else {
       res.status(404).send(responseJson);
     }

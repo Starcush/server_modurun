@@ -66,7 +66,7 @@ export default {
               )as rateValue
               FROM track
               LEFT JOIN user_track ON track.id = user_track.trackId AND user_track.userId = ${userId}
-              WHERE track.id = ${trackId}
+	      WHERE track.id = ${trackId}
               `);
     return resultTrack;
   },
@@ -99,7 +99,8 @@ export default {
                 WHERE (ut.userId = ${userId})
               ) a_ut
               LEFT JOIN rate ON rate.trackId = a_ut.trackId AND rate.userId = a_ut.userId
-              `);
+	      ORDER BY a_ut.bookmark DESC
+	      `);
     if (findresult.length) {
       return findresult;
     }

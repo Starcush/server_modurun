@@ -48,7 +48,7 @@ export default {
   * 스케줄 유틸
   */
   filterDistanceSch: (schedule: any[], distance, userPosition) => schedule.filter((ele) => {
-    const origin = JSON.parse(ele.track.origin);
+  const origin = JSON.parse(ele.track.origin);
     return distance > distanceFrom([origin, userPosition]) * 1000;
   }),
 
@@ -71,7 +71,6 @@ export default {
     return (filterFrom <= eleFrom) && (eleTo <= filterTo);
   }),
   filterTimeSch: (schedule: any[], date) => schedule.filter((ele) => {
-    console.log(date);
     const filterTimeFromHour = new Date(date.timeFrom).getHours();
     const filterTimeFromMinutes = new Date(date.timeFrom).getMinutes();
 

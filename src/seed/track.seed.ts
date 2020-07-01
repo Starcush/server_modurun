@@ -116,19 +116,17 @@ let beforeLength = [
   }
 ]`,
   },
-];
-
-const addTrack = Array(100).fill({
-  trackTitle: '동탄순환대로26길',
-  origin: `{
-            "latitude": 37.200651,
-            "longitude": 127.027508
-          }`,
-  destination: `{
+  {
+    trackTitle: '동탄순환대로26길',
+    origin: `{
             "latitude": 37.203536,
             "longitude": 127.117928
           }`,
-  route: `[
+    destination: `{
+            "latitude": 37.203536,
+            "longitude": 127.119885
+          }`,
+    route: `[
   {
     "latitude": 37.205945,
     "longitude": 127.111646
@@ -142,8 +140,85 @@ const addTrack = Array(100).fill({
     "longitude": 127.116066
   }
 ]`,
-}, 0, 50);
-beforeLength = beforeLength.concat(addTrack);
+  },
+  {
+    trackTitle: '동탄순환대로27길',
+    origin: `{
+            "latitude": 37.203536,
+            "longitude": 127.117928
+          }`,
+    destination: `{
+            "latitude": 37.203536,
+            "longitude": 127.119885
+          }`,
+    route: `[
+  {
+    "latitude": 37.205945,
+    "longitude": 127.111646
+  },
+  {
+    "latitude": 37.204343,
+    "longitude": 127.113221
+  },
+  {
+    "latitude": 37.204731,
+    "longitude": 127.116066
+  }
+]`,
+  },
+  {
+    trackTitle: '동탄순환대로28길',
+    origin: `{
+            "latitude": 37.203536,
+            "longitude": 127.117928
+          }`,
+    destination: `{
+            "latitude": 37.203536,
+            "longitude": 127.119885
+          }`,
+    route: `[
+  {
+    "latitude": 37.205945,
+    "longitude": 127.111646
+  },
+  {
+    "latitude": 37.204343,
+    "longitude": 127.113221
+  },
+  {
+    "latitude": 37.204731,
+    "longitude": 127.116066
+  }
+]`,
+  },
+];
+
+// const addTrack = Array(100).fill({
+//   trackTitle: '동탄순환대로26길',
+//   origin: `{
+//             "latitude": 37.200651,
+//             "longitude": 127.027508
+//           }`,
+//   destination: `{
+//             "latitude": 37.203536,
+//             "longitude": 127.117928
+//           }`,
+//   route: `[
+//   {
+//     "latitude": 37.205945,
+//     "longitude": 127.111646
+//   },
+//   {
+//     "latitude": 37.204343,
+//     "longitude": 127.113221
+//   },
+//   {
+//     "latitude": 37.204731,
+//     "longitude": 127.116066
+//   }
+// ]`,
+// }, 0, 50);
+// beforeLength = beforeLength.concat(addTrack);
 
 export const TrackSeed = {
   makeFakeData: beforeLength.map((ele, idx) => ({

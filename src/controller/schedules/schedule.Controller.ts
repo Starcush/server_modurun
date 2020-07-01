@@ -29,7 +29,6 @@ export default {
     });
     const { userId } = userInfo;
     const { filter, userposition, area } = req.params;
-
     try {
       const schedules = await scheduleRepository.getAllSchedule(JSON.parse(filter), JSON.parse(userposition), JSON.parse(area), userId || process.env.USER_ID);
       if (schedules.length > 0) {
